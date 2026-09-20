@@ -1,0 +1,57 @@
+{
+    "mario kart": {
+        "formula": "9*8",
+        "variables": [
+            {
+                "nombre": "velocidad",
+                "valor": "0.5"
+            },
+            {
+                "nombre": "frenos",
+                "valor": "0.4"
+            },
+            {
+                "nombre": "inicio",
+                "valor": "0.3"
+            }
+        ]
+    },
+    "tekken 11": {
+        "formula": "golpes*2",
+        "variables": [
+            {
+                "nombre": "golpes",
+                "valor": "20"
+            },
+            {
+                "nombre": "golpecito",
+                "valor": "5"
+            }
+        ],
+        "min_val": 6.0,
+        "max_val": 10.0
+    },
+    "ejemplo de matriz con excel": {
+        "formula": "",
+        "variables": [],
+        "min_val": 1.0,
+        "max_val": 10.0
+    },
+    "ejemplo 2 de como se hria mi fokin matriz": {
+        "formula": "",
+        "prompt_instrucciones": "Hola Gemini. Necesito tu ayuda como analista táctico de eSports para evaluar jugadores de EA Sports FC 26 utilizando la Matriz de Rendimiento de Colisseum Arena.\r\nA continuación te detallo la estructura, las 5 categorías de evaluación y las reglas de cálculo que debes entender y aplicar cuando te proporcione los datos de un partido:\r\nESTRUCTURA DE EVALUACIÓN:\r\nATAQUE Y FINALIZACIÓN (TIR):\r\nFórmula base: (\\text{Tiros al Arco} \\div \\text{Tiros Totales}) \\times 10.\r\nAjuste por xG (Goles Esperados): Si los Goles convertidos son mayores al xG, suma +1 a la nota. Si los Goles son menores al xG, resta -1. (Límite: mínimo 1, máximo 10).\r\nTÁCTICA Y DISTRIBUCIÓN (TAC):\r\nConversión por % de precisión de pases:\r\n>90\\% = Nota 9.5\r\n85\\% a 89\\% = Nota 7.5\r\n80\\% a 84\\% = Nota 6.0\r\n<80\\% = Nota 4.5\r\nBono: Suma +1 si el jugador adaptó la formación en tiempo real durante el partido. (Límite máximo: 10).\r\nSOLÍDEZ DEFENSIVA (DEF):\r\nFórmula base: (\\text{Entradas Ganadas} \\div \\text{Entradas Intentadas}) \\times 10.\r\nPenalización: Resta -1 punto si el cursor manual falló críticamente durante el partido. (Límite mínimo: 1).\r\nMECÁNICAS Y FLUIDEZ (MEC):\r\nCriterio por % de regates y mecánicas:\r\n>65\\% de regates completados + Green Timing activo = Nota 9.5\r\n50\\% a 64\\% de regates = Nota 7.5\r\n<50\\% o juego plano = Nota 4.5\r\nTEMPERAMENTO Y PRESIÓN (MEN):\r\nEvaluación cualitativa (1 al 10): Calma/enfoque = 9-10 | Molestia controlada = 7-8 | Tilt/Frustración = 1-5.\r\nCÁLCULO DEL RESULTADO GLOBAL (GRL):\r\nGRL = Promedio exacto de las 5 categorías: (\\text{TIR} + \\text{TAC} + \\text{DEF} + \\text{MEC} + \\text{MEN}) \\div 5.\r\nDIAGNÓSTICO SEGÚN EL GRL:\r\nGRL 1.0 - 5.9 (Nivel Amateur): Requiere trabajar fundamentos de pase y defensa posicional.\r\nGRL 6.0 - 7.9 (Nivel Aspirante): Buena base mecánica. Listo para ingresar a torneos comunitarios locales.\r\nGRL 8.0 - 10.0 (Nivel Competitivo / Pro-Prospect): Domina el metajuego y mecánicas avanzadas. Apto para representar al club en clasificatorios de la FVDE.\r\nINSTRUCCIONES PARA TI:\r\nConfirmame que comprendiste estas reglas. Cuando yo te ingrese los datos de un partido o te pida armar una tabla en esta hoja de cálculo, calcula automáticamente las notas de las 5 áreas, el GRL global y redacta el diagnóstico correspondiente.\"",
+        "min_val": 1.0,
+        "max_val": 10.0
+    },
+    "fokin ej 3": {
+        "formula": "carreras*4",
+        "prompt_instrucciones": "Si > 50% = 4 pts",
+        "variables": [
+            {
+                "nombre": "Si  50  4 pts"
+            }
+        ],
+        "min_val": 1.0,
+        "max_val": 10.0
+    }
+}
