@@ -5,3 +5,4 @@ python-multipart==0.0.20
 openpyxl==3.1.5
 pytest==8.4.2
 playwright==1.55.0
+itsdangerous
