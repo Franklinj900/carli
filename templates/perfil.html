@@ -1,0 +1,296 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="panel-glass rounded-2xl p-5 shadow-xl space-y-5">
+  <div class="flex justify-between items-center border-b border-[#1d354d] pb-3 no-print">
+    <h2 class="text-xs font-bold text-[#FFE500] font-streaming tracking-wider uppercase flex items-center gap-2">
+      REPORTE TÁCTICO DEL GLADIADOR
+    </h2>
+    <button onclick="window.print()" class="bg-[#38bdf8]/20 hover:bg-[#38bdf8]/30 text-[#38bdf8] border border-[#38bdf8]/50 px-3 py-1.5 rounded-lg text-xs font-bold font-streaming transition-all no-print">
+      IMPRIMIR / PDF
+    </button>
+  </div>
+
+  {% if current_user %}
+    <div id="reporte-perfil-impresion" class="space-y-4 bg-[#050b14]/95 p-4 sm:p-5 rounded-2xl border border-[#38bdf8]/30">
+      
+      <!-- GRID SUPERIOR -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        
+        <!-- TARJETA IZQUIERDA: ID, NICKNAME, DATOS Y RÉCORD -->
+        <div class="lg:col-span-2 bg-[#03080f] p-4 rounded-xl border border-[#1d354d] space-y-4">
+          
+          <!-- Encabezado con ID y Nickname -->
+          <div class="flex justify-between items-start">
+            <div class="space-y-1">
+              <span class="text-[10px] text-[#38bdf8] font-mono tracking-wider block">ID: #{{ '%03d' | format(current_user.id) }}</span>
+              <h3 class="text-xl font-extrabold text-white font-streaming tracking-wide">{{ current_user.nickname }}</h3>
+            </div>
+            <div class="bg-[#08101a] border border-[#FFE500]/40 px-3 py-1.5 rounded-xl text-center shadow-lg">
+              <span class="text-[10px] font-black text-[#FFE500] font-streaming">{{ current_user.points if current_user.points is defined and current_user.points is not none else 0 }} PTS</span>
+            </div>
+          </div>
+
+          <!-- Cuadros de Nombre, Edad y Teléfono -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="bg-[#08101a] border border-[#1d354d] p-3 rounded-xl space-y-1">
+              <span class="text-[9px] text-[#8aa3b8] font-streaming uppercase tracking-wider block">NOMBRE</span>
+              <p class="text-xs font-bold text-[#FFE500]">{{ current_user.name }} {{ current_user.surname }}</p>
+            </div>
+            <div class="bg-[#08101a] border border-[#1d354d] p-3 rounded-xl flex justify-between items-center">
+              <div>
+                <span class="text-[9px] text-[#8aa3b8] font-streaming uppercase tracking-wider block">EDAD</span>
+                <p class="text-xs font-bold text-white">{{ current_user.age if current_user.age is defined else 'N/A' }} años</p>
+              </div>
+              <div class="text-right">
+                <span class="text-[9px] text-[#8aa3b8] font-streaming uppercase tracking-wider block">TELÉFONO</span>
+                <p class="text-xs font-bold text-white">{{ current_user.phone if current_user.phone is defined and current_user.phone else 'N/A' }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Récord de Combates -->
+          <div class="bg-[#08101a] border border-[#1d354d] p-3 rounded-xl space-y-1">
+            <span class="text-[9px] text-[#38bdf8] font-streaming uppercase tracking-wider block">RÉCORD DE COMBATES</span>
+            <div class="text-xs font-bold text-slate-200 flex flex-wrap gap-4 pt-1 font-mono">
+              <span class="text-emerald-400">{{ current_user.wins if current_user.wins is defined else 0 }} VICTORIAS</span>
+              <span class="text-rose-400">{{ current_user.losses if current_user.losses is defined else 0 }} DERROTAS</span>
+              <span class="text-amber-400">{{ current_user.draws if current_user.draws is defined else 0 }} EMPATES</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- TARJETA DERECHA: PUNTOS CON CÍRCULO GIRATORIO -->
+        <div class="bg-[#03080f] p-4 rounded-xl border border-[#1d354d] flex flex-col items-center justify-center text-center space-y-3 relative overflow-hidden">
+          <span class="text-[10px] text-[#FFE500] font-streaming uppercase tracking-wider font-bold">PUNTOS</span>
+          
+          <div class="relative w-28 h-28 flex items-center justify-center my-1">
+            <svg class="w-full h-full transform -rotate-90 animate-spin-slow" viewBox="0 0 36 36">
+              <path class="text-[#1d354d]" stroke-width="3" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+              <path class="text-[#FFE500]" stroke-dasharray="100, 100" stroke-width="3" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+            </svg>
+            <div class="absolute inset-0 flex flex-col items-center justify-center">
+              <span class="text-lg font-black text-white font-streaming">
+                {{ ((current_user.points if current_user.points is defined and current_user.points is not none else 0) / 1000 * 100) | round(1) }}%
+              </span>
+            </div>
+          </div>
+
+          <div class="space-y-0.5">
+            <span class="text-sm font-extrabold text-[#FFE500] font-streaming block">
+              {{ current_user.points if current_user.points is defined and current_user.points is not none else 0 }} PUNTOS
+            </span>
+            <span class="text-[9px] text-[#8aa3b8] uppercase font-mono">Valoración en Arena</span>
+          </div>
+        </div>
+
+      </div>
+
+      {% if current_user.scouting %}
+        {% set s = current_user.scouting %}
+        
+        <!-- MATRIZ DE RENDIMIENTO Y RESUMEN TÁCTICO -->
+        <div class="bg-[#03080f] p-4 rounded-xl border border-[#1d354d] space-y-3">
+          <h4 class="text-xs font-bold text-[#FFE500] font-streaming uppercase tracking-wider">MATRIZ DE RENDIMIENTO Y RESUMEN TÁCTICO</h4>
+          
+          <div class="space-y-2.5 pt-1">
+            <!-- TIR -->
+            <div>
+              <div class="flex justify-between text-[11px] font-bold mb-1">
+                <span class="text-white">Ataque y Finalización (TIR)</span>
+                <span class="text-[#FFE500] font-mono">{{ s.tir }} / 10</span>
+              </div>
+              <div class="w-full bg-[#08101a] h-2.5 rounded-full overflow-hidden border border-[#1d354d]">
+                <div class="h-full bg-gradient-to-r from-amber-500 to-[#FFE500] rounded-full transition-all duration-500" style="width: {{ (s.tir / 10) * 100 }}%;"></div>
+              </div>
+            </div>
+
+            <!-- TAC -->
+            <div>
+              <div class="flex justify-between text-[11px] font-bold mb-1">
+                <span class="text-white">Táctica y Distribución (TAC)</span>
+                <span class="text-[#38bdf8] font-mono">{{ s.tac }} / 10</span>
+              </div>
+              <div class="w-full bg-[#08101a] h-2.5 rounded-full overflow-hidden border border-[#1d354d]">
+                <div class="h-full bg-gradient-to-r from-blue-600 to-[#38bdf8] rounded-full transition-all duration-500" style="width: {{ (s.tac / 10) * 100 }}%;"></div>
+              </div>
+            </div>
+
+            <!-- DEF -->
+            <div>
+              <div class="flex justify-between text-[11px] font-bold mb-1">
+                <span class="text-white">Solidez Defensiva (DEF)</span>
+                <span class="text-rose-400 font-mono">{{ s.def }} / 10</span>
+              </div>
+              <div class="w-full bg-[#08101a] h-2.5 rounded-full overflow-hidden border border-[#1d354d]">
+                <div class="h-full bg-gradient-to-r from-rose-600 to-rose-400 rounded-full transition-all duration-500" style="width: {{ (s.def / 10) * 100 }}%;"></div>
+              </div>
+            </div>
+
+            <!-- MEC -->
+            <div>
+              <div class="flex justify-between text-[11px] font-bold mb-1">
+                <span class="text-white">Mecánicas y Fluidez (MEC)</span>
+                <span class="text-emerald-400 font-mono">{{ s.mec }} / 10</span>
+              </div>
+              <div class="w-full bg-[#08101a] h-2.5 rounded-full overflow-hidden border border-[#1d354d]">
+                <div class="h-full bg-gradient-to-r from-emerald-600 to-emerald-400 rounded-full transition-all duration-500" style="width: {{ (s.mec / 10) * 100 }}%;"></div>
+              </div>
+            </div>
+
+            <!-- MEN -->
+            <div>
+              <div class="flex justify-between text-[11px] font-bold mb-1">
+                <span class="text-white">Temperamento y Presión (MEN)</span>
+                <span class="text-purple-400 font-mono">{{ s.men }} / 10</span>
+              </div>
+              <div class="w-full bg-[#08101a] h-2.5 rounded-full overflow-hidden border border-[#1d354d]">
+                <div class="h-full bg-gradient-to-r from-purple-600 to-purple-400 rounded-full transition-all duration-500" style="width: {{ (s.men / 10) * 100 }}%;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MATRIZ GRL -->
+        <div class="bg-[#03080f] p-4 rounded-xl border border-[#FFE500]/40 flex justify-between items-center shadow-lg">
+          <div>
+            <span class="text-[10px] text-[#FFE500] font-streaming uppercase font-bold">MATRIZ GRL (VALORACIÓN GENERAL)</span>
+            <p class="text-xs text-slate-300">Puntuación global evaluada en la arena</p>
+          </div>
+          <div class="bg-[#FFE500] text-[#08101a] font-black px-4 py-2 rounded-xl text-lg font-streaming shadow-md">
+            {{ s.grl }} GRL
+          </div>
+        </div>
+      {% else %}
+        <div class="text-center py-6 text-[#8aa3b8] italic text-xs bg-[#03080f] rounded-xl border border-[#1d354d]">
+          Tu gladiador aún no ha sido evaluado en la Matriz GRL por el administrador.
+        </div>
+      {% endif %}
+
+      <!-- SECCIÓN INFERIOR: HABILIDADES (IZQ) Y TORNEOS PARTICIPADOS (DER) -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        
+        <!-- HABILIDADES Y FORTALEZAS REGISTRADAS (Izquierda) -->
+        <div class="bg-[#03080f] p-4 rounded-xl border border-[#38bdf8]/40 space-y-2 flex flex-col">
+          <h4 class="text-xs font-bold text-[#38bdf8] font-streaming uppercase tracking-wider">HABILIDADES Y FORTALEZAS REGISTRADAS</h4>
+          <div class="bg-[#050b14] p-3 rounded-lg border border-[#1d354d] flex-1">
+            <p class="text-xs text-slate-200 leading-relaxed whitespace-pre-line">
+              {% if current_user.scouting and current_user.scouting.habilidades %}
+                {{ current_user.scouting.habilidades }}
+              {% else %}
+                No hay habilidades o diagnósticos registrados todavía por el administrador.
+              {% endif %}
+            </p>
+          </div>
+        </div>
+
+        <!-- TORNEOS EN LOS QUE HA PARTICIPADO (Derecha) -->
+        <div class="bg-[#03080f] p-4 rounded-xl border border-[#FFE500]/40 space-y-2 flex flex-col">
+          <h4 class="text-xs font-bold text-[#FFE500] font-streaming uppercase tracking-wider">TORNEOS PARTICIPADOS</h4>
+          <div class="bg-[#050b14] p-3 rounded-lg border border-[#1d354d] max-h-48 overflow-y-auto pr-1 space-y-1.5 custom-scrollbar flex-1">
+            {% if current_user.torneos_participados and current_user.torneos_participados | length > 0 %}
+              <ul class="space-y-1.5">
+                {% for torneo in current_user.torneos_participados %}
+                  <li class="text-xs text-slate-200 bg-[#08101a] px-2.5 py-1.5 rounded border border-[#1d354d] flex items-center justify-between gap-2">
+                    <span class="truncate font-semibold">⚔️ {{ torneo }}</span>
+                    {% if current_user.torneos_ganados is defined and torneo in current_user.torneos_ganados %}
+                      <span class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/50 px-2 py-0.5 rounded text-[9px] font-bold font-streaming whitespace-nowrap">🏆 GANADOR</span>
+                    {% else %}
+                      <span class="bg-[#38bdf8]/20 text-[#38bdf8] border border-[#38bdf8]/40 px-2 py-0.5 rounded text-[9px] font-bold font-streaming whitespace-nowrap">PARTICIPANTE</span>
+                    {% endif %}
+                  </li>
+                {% endfor %}
+              </ul>
+            {% else %}
+              <p class="text-xs text-slate-400 italic text-center py-4">
+                Aún no registra participaciones en torneos oficiales de la arena.
+              </p>
+            {% endif %}
+          </div>
+        </div>
+
+      </div>
+
+      <!-- FOOTER DE CONTACTO SUPERPEQUEÑITO PARA IMPRESIÓN -->
+      <div class="pt-2 border-t border-[#1d354d] flex justify-between items-center text-[8px] text-[#8aa3b8] font-mono">
+        <span>📍 Colisseum Arena</span>
+        <span>📞 +58 412-0000000</span>
+        <span>✉️ soporte@colisseumarena.com</span>
+      </div>
+
+    </div>
+  {% else %}
+    <div class="panel-glass rounded-2xl p-8 text-center space-y-4">
+      <p class="text-xs text-[#8aa3b8]">Debes iniciar sesión con tu usuario de gladiador para ver tu perfil y reporte táctico.</p>
+      <form action="/login" method="POST" class="max-w-xs mx-auto space-y-3 pt-2">
+        <input type="text" name="nickname" placeholder="Usuario / Nick" required class="w-full bg-[#03080f]/90 border border-[#1d354d] rounded-xl px-3 py-2 text-xs text-white">
+        <input type="password" name="password" placeholder="Contraseña" required class="w-full bg-[#03080f]/90 border border-[#1d354d] rounded-xl px-3 py-2 text-xs text-white">
+        <button type="submit" class="w-full btn-amarillo py-2 rounded-xl text-xs uppercase font-streaming">INICIAR SESIÓN</button>
+      </form>
+    </div>
+  {% endif %}
+</section>
+
+<style>
+@keyframes spinSlow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.animate-spin-slow {
+  animation: spinSlow 12s linear infinite;
+}
+
+/* Scroll personalizado para la lista de torneos */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #03080f;
+  border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #1d354d;
+  border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #FFE500;
+}
+
+@media print {
+  @page {
+    size: portrait;
+    margin: 8mm;
+  }
+  body {
+    background-color: #03080f !important;
+    color: white !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .no-print, header, nav, footer, button {
+    display: none !important;
+  }
+  section.panel-glass {
+    border: none !important;
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+  }
+  #reporte-perfil-impresion {
+    background: #050b14 !important;
+    border: 1px solid #38bdf8 !important;
+    padding: 10px !important;
+    margin: 0 auto !important;
+    max-width: 100% !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+  * {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}
+</style>
+{% endblock %}

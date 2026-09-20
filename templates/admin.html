@@ -1,0 +1,420 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="panel-glass rounded-2xl p-6 shadow-2xl space-y-6 border border-[#38bdf8]/30">
+  <!-- ENCABEZADO SUPERIOR -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#FFE500]/20 pb-4">
+    <h2 class="text-sm font-bold text-[#FFE500] font-streaming tracking-wider uppercase flex items-center gap-2">
+      PANEL PRIVADO DE ADMINISTRACIÓN - GESTIÓN Y MATRIZ
+    </h2>
+    {% if is_main %}
+      <div class="flex items-center gap-3 bg-black/40 px-3 py-1.5 rounded-xl border border-[#FFE500]/40 backdrop-blur-sm">
+        <span class="text-[10px] text-[#FFE500] font-bold font-streaming uppercase">SESIÓN ACTIVA</span>
+        <a href="/main-logout" class="bg-red-500/20 hover:bg-red-500/30 text-red-300 border border-red-500/50 px-2.5 py-1 rounded-lg text-[10px] font-bold font-streaming transition-all">SALIR</a>
+      </div>
+    {% endif %}
+  </div>
+
+  {% if is_main %}
+    <div class="space-y-6">            
+      {% if request is defined and request.query_params and request.query_params.get('inscripcion') == 'ok' %}
+        <div class="bg-emerald-500/20 border border-emerald-500/50 text-emerald-300 px-4 py-2.5 rounded-xl text-xs font-bold text-center">JUGADOR AGREGADO AL TORNEO</div>
+      {% elif request is defined and request.query_params and request.query_params.get('inscripcion') == 'duplicado' %}
+        <div class="bg-amber-500/20 border border-amber-500/50 text-amber-200 px-4 py-2.5 rounded-xl text-xs font-bold text-center">ESE JUGADOR YA ESTÁ INSCRITO EN EL TORNEO</div>
+      {% elif request is defined and request.query_params and request.query_params.get('inscripcion') == 'no_registrado' %}
+        <div class="bg-red-500/20 border border-red-500/50 text-red-300 px-4 py-2.5 rounded-xl text-xs font-bold text-center">SÓLO PUEDES AGREGAR USUARIOS REGISTRADOS</div>
+      {% elif request is defined and request.query_params and request.query_params.get('cuadrante') == 'insuficientes' %}
+        <div class="bg-amber-500/20 border border-amber-500/50 text-amber-200 px-4 py-2.5 rounded-xl text-xs font-bold text-center">AÚN NO HAY DOS PARTICIPANTES PARA ARMAR UN CUADRANTE</div>
+      {% endif %}
+
+      <!-- CREACIÓN DE NUEVOS TORNEOS OFICIALES -->
+      <div class="p-4 rounded-xl border border-[#38bdf8]/30 backdrop-blur-md shadow-lg space-y-3">
+        <h3 class="text-xs font-bold text-[#38bdf8] font-streaming tracking-wider uppercase flex items-center gap-1.5">CREAR NUEVO TORNEO OFICIAL</h3>
+        <form action="/main/crear-torneo" method="POST" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div class="col-span-1 lg:col-span-2 space-y-1">
+            <label class="text-[9px] text-[#8aa3b8] font-streaming uppercase">TÍTULO DEL TORNEO</label>
+            <input type="text" name="titulo" placeholder="Ej: Torneo EA Sports FC 26" required class="w-full bg-[#03080f]/70 border border-[#1d354d] rounded-xl px-3 py-2 text-xs text-white placeholder-[#546e7a]">
+          </div>
+
+          <div class="col-span-1 space-y-1">
+            <label class="text-[9px] text-[#8aa3b8] font-streaming uppercase">FECHA Y HORA</label>
+            <input type="datetime-local" name="fecha_inicio" class="w-full bg-[#03080f]/70 border border-[#1d354d] rounded-xl px-3 py-2 text-xs text-white">
+          </div>
+
+          <div class="col-span-1 space-y-1">
+            <label class="text-[9px] text-[#8aa3b8] font-streaming uppercase">PREMIO / BOTE</label>
+            <input type="text" name="premio" placeholder="Ej: $100 + Trofeo" class="w-full bg-[#03080f]/70 border border-[#1d354d] rounded-xl px-3 py-2 text-xs text-white placeholder-[#546e7a]">
+          </div>
+
+          <div class="col-span-1 lg:col-span-2 space-y-1">
+            <label class="text-[9px] text-[#8aa3b8] font-streaming uppercase">LÍMITE DE GLADIADORES</label>
+            <input type="number" name="max_participantes" value="128" min="2" max="128" class="w-full bg-[#03080f]/70 border border-[#1d354d] rounded-xl px-3 py-2 text-xs text-white">
+          </div>
+
+          <div class="col-span-1 sm:col-span-2 lg:col-span-3 space-y-1">
+            <label class="text-[9px] text-[#8aa3b8] font-streaming uppercase">REGLAS / NOTAS DEL TORNEO</label>
+            <input type="text" name="reglas" placeholder="Reglas de tiempo, mandos, sanción por inasistencia..." class="w-full bg-[#03080f]/70 border border-[#1d354d] rounded-xl px-3 py-2 text-xs text-white placeholder-[#546e7a]">
+          </div>
+
+          <button type="submit" class="col-span-1 sm:col-span-2 lg:col-span-3 btn-amarillo py-2.5 rounded-xl text-xs font-bold font-streaming uppercase tracking-wider shadow-lg hover:scale-[1.01] transition-transform">GENERAR TORNEO</button>
+        </form>
+      </div>
+
+      <!-- RESUMEN Y EXPORTACIÓN -->
+      <div class="space-y-3 pt-2">
+        <h4 class="text-xs font-bold text-[#38bdf8] font-streaming uppercase tracking-wider">RESUMEN DE INSCRITOS Y EXPORTACIÓN</h4>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="border border-[#1d354d]/50 p-3.5 rounded-xl flex justify-between items-center">
+            <div>
+              <span class="text-[10px] text-[#8aa3b8] font-streaming uppercase block">Usuarios Registrados:</span>
+              <p class="text-base font-bold text-white font-streaming">{{ (usuarios_registrados | default([])) | length }} Gladiadores</p>
+            </div>
+            <button onclick="toggleTablaUsuarios()" class="bg-[#38bdf8]/20 hover:bg-[#38bdf8]/30 text-[#38bdf8] border border-[#38bdf8]/50 px-3 py-1.5 rounded-lg text-[10px] font-bold font-streaming transition-all">
+              VER
+            </button>
+          </div>
+          <div class="border border-[#1d354d]/50 p-3.5 rounded-xl">
+            <span class="text-[10px] text-[#8aa3b8] font-streaming uppercase block">Torneos Activos:</span>
+            <p class="text-base font-bold text-[#FFE500] font-streaming">{{ (torneos_activos | default([])) | length }} Torneos</p>
+          </div>
+          <div class="border border-[#1d354d]/50 p-3.5 rounded-xl flex justify-between items-center">
+            <div>
+              <span class="text-[10px] text-[#8aa3b8] font-streaming uppercase block">Reporte Completo:</span>
+              <p class="text-xs font-bold text-emerald-400 font-streaming">Base de Datos Excel</p>
+            </div>
+            <a href="/main/exportar-excel" class="bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/50 px-3 py-1.5 rounded-lg text-[10px] font-bold font-streaming transition-all">
+              DESCARGAR
+            </a>
+          </div>
+        </div>
+
+        <!-- TABLA DESPLEGABLE DE USUARIOS -->
+        <div id="seccion-usuarios-db" class="hidden pt-2 space-y-2">
+          <div class="overflow-x-auto rounded-xl border border-[#1d354d]/50 bg-black/40">
+            <table class="w-full text-left text-xs">
+              <thead>
+                <tr class="border-b border-[#1d354d] bg-black/60 text-[#38bdf8] font-streaming">
+                  <th class="py-2.5 px-3">ID</th>
+                  <th class="py-2.5 px-3">NOMBRE REAL</th>
+                  <th class="py-2.5 px-3">TELÉFONO</th>
+                  <th class="py-2.5 px-3">USUARIO/NICK</th>
+                  <th class="py-2.5 px-3">RÉCORD</th>
+                  <th class="py-2.5 px-3">PUNTOS</th>
+                  <th class="py-2.5 px-3 text-center">ACCIONES</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-[#1d354d]/30 text-[#cbd5e1]">
+                {% if usuarios_registrados is defined and usuarios_registrados %}
+                  {% for u in usuarios_registrados %}
+                    <tr class="hover:bg-[#38bdf8]/10 transition-colors">
+                      <td class="py-2 px-3 font-mono text-[#8aa3b8]">#{{ '%03d' | format(u.id) }}</td>
+                      <td class="py-2 px-3 font-bold text-white">{{ u.nombre }} {{ u.apellido }}</td>
+                      <td class="py-2 px-3 text-emerald-400 font-mono">{{ u.telefono }}</td>
+                      <td class="py-2 px-3 text-[#FFE500] font-bold">{{ u.nickname }}</td>
+                      <td class="py-2 px-3 text-[#38bdf8] font-mono">{{ u.wins }}W-{{ u.losses }}L-{{ u.draws }}E</td>
+                      <td class="py-2 px-3 text-emerald-400 font-bold font-mono">{{ u.points }} PTS</td>
+                      <td class="py-2 px-3 text-center">
+                        <form action="/main/eliminar-usuario" method="POST" class="inline" onsubmit="return confirm('¿Eliminar gladiador?');">
+                          <input type="hidden" name="user_id" value="{{ u.id }}">
+                          <button type="submit" class="bg-red-500/20 text-red-300 border border-red-500/50 px-2 py-1 rounded text-[10px] font-bold">ELIMINAR</button>
+                        </form>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                {% else %}
+                  <tr><td colspan="7" class="py-4 text-center text-[#8aa3b8] italic">No hay usuarios registrados.</td></tr>
+                {% endif %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- TORNEOS ACTIVOS Y GESTIÓN DE INSCRITOS -->
+      <div class="space-y-3 pt-2 border-t border-[#1d354d]/50">
+        <h4 class="text-xs font-bold text-[#FFE500] font-streaming uppercase flex items-center gap-1.5">TORNEOS ACTIVOS Y GESTIÓN DE INSCRITOS</h4>
+        {% if torneos_activos is defined and torneos_activos %}
+          <div class="space-y-3">
+            {% for t in torneos_activos %}
+              {% set t_key = (t.titulo ~ ' (' ~ t.subtitulo ~ ')') if t.subtitulo else t.titulo %}
+              {% set inscritos_lista = inscritos_torneos.get(t_key, []) if inscritos_torneos is defined else [] %}
+              <div class="border border-[#1d354d]/50 p-3.5 rounded-xl space-y-3 shadow-lg">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-[#1d354d]/40 pb-2">
+                  <div>
+                    <h5 class="text-xs font-bold text-white font-streaming">{{ t.titulo }}{% if t.subtitulo %} ({{ t.subtitulo }}){% endif %}</h5>
+                    <p class="text-[10px] text-[#38bdf8]">Premio: {{ t.premio if t.premio else 'Por definir' }}</p>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <button type="button" onclick="toggleListaInscritos('inscritos-torneo-{{ loop.index }}')" class="bg-[#38bdf8]/20 hover:bg-[#38bdf8]/30 text-[#38bdf8] border border-[#38bdf8]/50 px-3 py-1 rounded-lg text-[10px] font-bold font-streaming transition-all flex items-center gap-1">
+                      VER LISTA ({{ inscritos_lista | length }})
+                    </button>
+
+                    <form action="/main/eliminar-torneo" method="POST" onsubmit="return confirm('¿Eliminar este torneo y sus datos?');">
+                      <input type="hidden" name="titulo_torneo" value="{{ t_key }}">
+                      <button type="submit" class="bg-red-500/20 hover:bg-red-500/30 text-red-300 border border-red-500/50 px-2.5 py-1 rounded-lg text-[10px] font-bold font-streaming transition-all">ELIMINAR TORNEO</button>
+                    </form>
+                  </div>
+                </div>
+
+                <!-- TABLA DESPLEGABLE DE INSCRITOS -->
+                <div id="inscritos-torneo-{{ loop.index }}" class="hidden space-y-2 pt-1">
+                  <div class="overflow-x-auto rounded-xl border border-[#1d354d]/50 bg-black/40">
+                    <table class="w-full text-left text-xs">
+                      <thead>
+                        <tr class="border-b border-[#1d354d] bg-black/60 text-[#38bdf8] font-streaming">
+                          <th class="py-2.5 px-3">#</th>
+                          <th class="py-2.5 px-3">GLADIADOR / NICKNAME</th>
+                          <th class="py-2.5 px-3 text-center">ACCIONES</th>
+                        </tr>
+                      </thead>
+                      <tbody class="divide-y divide-[#1d354d]/30 text-[#cbd5e1]">
+                        {% if inscritos_lista %}
+                          {% for inscrito in inscritos_lista %}
+                            <tr class="hover:bg-[#38bdf8]/10 transition-colors">
+                              <td class="py-2 px-3 font-mono text-[#8aa3b8]">#{{ loop.index }}</td>
+                              <td class="py-2 px-3 font-bold text-[#FFE500]">{{ inscrito.nickname if inscrito.nickname is defined else inscrito }}</td>
+                              <td class="py-2 px-3 text-center">
+                                <form action="/main/eliminar-inscrito" method="POST" class="inline" onsubmit="return confirm('¿Remover gladiador de este torneo?');">
+                                  <input type="hidden" name="titulo_torneo" value="{{ t_key }}">
+                                  <input type="hidden" name="nickname" value="{{ inscrito.nickname if inscrito.nickname is defined else inscrito }}">
+                                  <button type="submit" class="bg-red-500/20 text-red-300 border border-red-500/50 px-2 py-1 rounded text-[10px] font-bold">REMOVER</button>
+                                </form>
+                              </td>
+                            </tr>
+                          {% endfor %}
+                        {% else %}
+                          <tr><td colspan="3" class="py-4 text-center text-[#8aa3b8] italic">No hay gladiadores inscritos en este torneo.</td></tr>
+                        {% endif %}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <!-- Formulario para agregar gladiador registrado al torneo -->
+                  <form action="/main/inscribir-jugador" method="POST" class="flex gap-2 pt-2">
+                    <input type="hidden" name="titulo_torneo" value="{{ t_key }}">
+                    <select name="nickname" required class="flex-1 bg-[#03080f]/70 border border-[#1d354d] rounded-xl px-3 py-2 text-xs text-white">
+                      <option value="" disabled selected>Añadir gladiador registrado...</option>
+                      {% if usuarios_registrados is defined and usuarios_registrados %}
+                        {% for u in usuarios_registrados %}
+                          <option value="{{ u.nickname }}">{{ u.nickname }} ({{ u.nombre }} {{ u.apellido }})</option>
+                        {% endfor %}
+                      {% endif %}
+                    </select>
+                    <button type="submit" class="bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/50 px-3 py-2 rounded-xl text-[10px] font-bold font-streaming transition-all">
+                      AGREGAR
+                    </button>
+                  </form>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="text-[10px] text-[#8aa3b8] italic">No hay torneos activos creados.</p>
+        {% endif %}
+      </div>
+
+      <!-- GESTIÓN DE CUADRANTES DE TORNEO -->
+      <div class="space-y-2 pt-2 border-t border-[#1d354d]/50">
+        <h4 class="text-xs font-bold text-[#f97316] font-streaming uppercase flex items-center gap-1.5">GESTIONAR CUADRANTES DE TORNEOS</h4>
+        <form action="/main/reorganizar-cuadrante" method="POST" class="flex flex-col sm:flex-row gap-2">
+           <select name="tournament_name" class="flex-1 bg-black/40 border border-[#1d354d] rounded-xl px-3 py-2 text-xs text-white focus:outline-none backdrop-blur-sm" required>
+              <option value="" disabled selected>Elige torneo para sortear cruces...</option>
+              {% if torneos_activos is defined and torneos_activos %}
+                {% for t in torneos_activos %}
+                   {% set t_key = (t.titulo ~ ' (' ~ t.subtitulo ~ ')') if t.subtitulo else t.titulo %}
+                   <option value="{{ t_key }}">{{ t.titulo }}{% if t.subtitulo %} ({{ t.subtitulo }}){% endif %}</option>
+                {% endfor %}
+              {% endif %}
+           </select>
+           <button type="submit" class="bg-[#f97316] hover:bg-[#ea580c] text-white px-4 py-2 rounded-xl text-[10px] font-bold font-streaming tracking-wider transition-all shadow-lg">SORTEAR CRUCES</button>
+        </form>
+        <p class="text-[10px] text-[#8aa3b8]">El cuadrante se actualiza automáticamente con todos los inscritos.</p>
+      </div>
+
+      <!-- MATRIZ DE RENDIMIENTO OFICIAL -->
+      <div class="space-y-3 pt-2 border-t border-[#1d354d]/50">
+        <div class="flex justify-between items-center">
+          <h4 class="text-xs font-bold text-[#FFE500] font-streaming uppercase">MATRIZ DE RENDIMIENTO OFICIAL</h4>
+          <button type="button" onclick="toggleMatrizOficial()" class="text-[10px] bg-[#FFE500]/20 hover:bg-[#FFE500]/30 text-[#FFE500] border border-[#FFE500]/50 px-2.5 py-1 rounded-lg font-streaming font-bold transition-all flex items-center gap-1 cursor-pointer">
+            PRESIONA PARA MOSTRAR MATRIZ
+          </button>
+        </div>
+
+        <form id="form-matriz-oficial" action="/main/evaluar-gladiador" method="POST" class="hidden space-y-4">
+          <div class="p-3 rounded-xl border border-[#1d354d] space-y-3">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="text-[10px] text-[#38bdf8] font-streaming uppercase font-bold block mb-1">GLADIADOR</label>
+                <select name="player_id" id="matriz-player-select" required class="w-full bg-[#03080f]/70 border border-[#1d354d] rounded-xl px-3 py-2 text-xs text-white">
+                  <option value="" disabled selected>Selecciona Gladiador...</option>
+                  {% if players is defined and players %}
+                    {% for p in players %}
+                      <option value="{{ p.id }}">{{ p.nickname }} ({{ p.name }} {{ p.surname }})</option>
+                    {% endfor %}
+                  {% endif %}
+                </select>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-2">
+              <div><label class="text-[9px] text-emerald-400 font-streaming block">VICTORIAS</label><input type="number" name="wins" id="inp_wins" placeholder="0" class="matriz-input w-full bg-[#03080f]/70 border border-[#1d354d] rounded-xl px-2.5 py-1.5 text-xs text-white"></div>
+              <div><label class="text-[9px] text-rose-400 font-streaming block">DERROTAS</label><input type="number" name="losses" id="inp_losses" placeholder="0" class="matriz-input w-full bg-[#03080f]/70 border border-[#1d354d] rounded-xl px-2.5 py-1.5 text-xs text-white"></div>
+              <div><label class="text-[9px] text-amber-400 font-streaming block">EMPATES</label><input type="number" name="draws" id="inp_draws" placeholder="0" class="matriz-input w-full bg-[#03080f]/70 border border-[#1d354d] rounded-xl px-2.5 py-1.5 text-xs text-white"></div>
+            </div>
+          </div>
+
+          <div id="matriz-eafc" class="space-y-3">
+            <div class="p-3 rounded-xl border border-[#1d354d]/50 space-y-2">
+              <span class="text-[10px] text-[#FFE500] font-streaming font-bold block">1. ATAQUE Y FINALIZACIÓN (TIR)</span>
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                <div><label class="text-[9px] text-[#8aa3b8] block">Tiros Totales</label><input type="number" name="tiros_totales" id="inp_tiros_totales" placeholder="0" class="matriz-input w-full bg-[#03080f]/70 border border-[#1d354d] rounded px-2 py-1 text-xs text-white"></div>
+                <div><label class="text-[9px] text-[#8aa3b8] block">Tiros al Arco</label><input type="number" name="tiros_arco" id="inp_tiros_arco" placeholder="0" class="matriz-input w-full bg-[#03080f]/70 border border-[#1d354d] rounded px-2 py-1 text-xs text-white"></div>
+                <div><label class="text-[9px] text-[#8aa3b8] block">Goles</label><input type="number" name="goles" id="inp_goles" placeholder="0" class="matriz-input w-full bg-[#03080f]/70 border border-[#1d354d] rounded px-2 py-1 text-xs text-white"></div>
+                <div><label class="text-[9px] text-[#8aa3b8] block">xG</label><input type="number" step="0.1" name="xg" id="inp_xg" placeholder="0.0" class="matriz-input w-full bg-[#03080f]/70 border border-[#1d354d] rounded px-2 py-1 text-xs text-white"></div>
+              </div>
+            </div>
+
+            <div class="p-3 rounded-xl border border-[#1d354d]/50 space-y-2">
+              <span class="text-[10px] text-[#38bdf8] font-streaming font-bold block">2. TÁCTICA Y DISTRIBUCIÓN (TAC)</span>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 items-center">
+                <div><label class="text-[9px] text-[#8aa3b8] block">% Pases</label><input type="number" step="0.1" name="precision_pases" id="inp_precision_pases" placeholder="0.0" class="matriz-input w-full bg-[#03080f]/70 border border-[#1d354d] rounded px-2 py-1 text-xs text-white"></div>
+                <label class="flex items-center gap-2 text-xs text-white bg-[#03080f]/70 border border-[#1d354d] p-2 rounded cursor-pointer mt-3 sm:mt-0">
+                  <input type="checkbox" name="cambio_formacion" id="inp_cambio_formacion" value="si" class="matriz-input"> Adaptación formación (+1)
+                </label>
+              </div>
+            </div>
+
+            <div class="p-3 rounded-xl border border-[#1d354d]/50 space-y-2">
+              <span class="text-[10px] text-rose-400 font-streaming font-bold block">3. SOLÍDEZ DEFENSIVA (DEF)</span>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 items-center">
+                <div><label class="text-[9px] text-[#8aa3b8] block">Entradas Intentadas</label><input type="number" name="entradas_intentadas" id="inp_entradas_intentadas" placeholder="0" class="matriz-input w-full bg-[#03080f]/70 border border-[#1d354d] rounded px-2 py-1 text-xs text-white"></div>
+                <div><label class="text-[9px] text-[#8aa3b8] block">Entradas Ganadas</label><input type="number" name="entradas_ganadas" id="inp_entradas_ganadas" placeholder="0" class="matriz-input w-full bg-[#03080f]/70 border border-[#1d354d] rounded px-2 py-1 text-xs text-white"></div>
+                <label class="flex items-center gap-2 text-xs text-white bg-[#03080f]/70 border border-[#1d354d] p-2 rounded cursor-pointer mt-3 sm:mt-0">
+                  <input type="checkbox" name="cursor_fallido" id="inp_cursor_fallido" value="si" class="matriz-input"> Fallo cursor (-1)
+                </label>
+              </div>
+            </div>
+
+            <div class="p-3 rounded-xl border border-[#1d354d]/50 space-y-2">
+              <span class="text-[10px] text-emerald-400 font-streaming font-bold block">4. MECÁNICAS (MEC)</span>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 items-center">
+                <div><label class="text-[9px] text-[#8aa3b8] block">% Regates</label><input type="number" step="0.1" name="precision_regates" id="inp_precision_regates" placeholder="0.0" class="matriz-input w-full bg-[#03080f]/70 border border-[#1d354d] rounded px-2 py-1 text-xs text-white"></div>
+                <label class="flex items-center gap-2 text-xs text-white bg-[#03080f]/70 border border-[#1d354d] p-2 rounded cursor-pointer mt-3 sm:mt-0">
+                  <input type="checkbox" name="green_timing" id="inp_green_timing" value="si" class="matriz-input"> Green Timing Activo
+                </label>
+              </div>
+            </div>
+
+            <div class="p-3 rounded-xl border border-[#1d354d]/50 space-y-2">
+              <span class="text-[10px] text-purple-400 font-streaming font-bold block">5. TEMPERAMENTO (MEN)</span>
+              <input type="number" step="0.5" name="nota_mental" id="inp_nota_mental" placeholder="Ej: 8.0" class="matriz-input w-full bg-[#03080f]/70 border border-[#1d354d] rounded px-2 py-1 text-xs text-white">
+            </div>
+          </div>
+
+          <!-- HABILIDADES -->
+          <div class="p-3 rounded-xl border border-[#1d354d]/50 space-y-2">
+            <span class="text-[10px] text-[#38bdf8] font-streaming font-bold block">6. HABILIDADES Y DIAGNÓSTICO</span>
+            <textarea name="habilidades" id="inp_habilidades" rows="2" placeholder="Diagnóstico del jugador..." class="matriz-input w-full bg-[#03080f]/70 border border-[#1d354d] rounded px-2.5 py-1.5 text-xs text-white"></textarea>
+          </div>
+
+          <button type="submit" class="w-full btn-amarillo py-2.5 rounded-xl text-xs uppercase font-streaming tracking-wider shadow-lg hover:scale-[1.01] transition-transform">EVALUAR Y GENERAR MATRIZ GRL</button>
+        </form>
+      </div>
+
+    </div>
+
+    <script>
+      const playersList = {{ usuarios_registrados | tojson }};
+
+      function toggleTablaUsuarios() {
+        const sec = document.getElementById('seccion-usuarios-db');
+        if (sec) sec.classList.toggle('hidden');
+      }
+      function toggleListaInscritos(idContainer) {
+        const sec = document.getElementById(idContainer);
+        if (sec) sec.classList.toggle('hidden');
+      }
+      function toggleMatrizOficial() {
+        const mat = document.getElementById('form-matriz-oficial');
+        if (mat) mat.classList.toggle('hidden');
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const select = document.getElementById('matriz-player-select');
+        const inputs = document.querySelectorAll('.matriz-input');
+        const form = document.getElementById('form-matriz-oficial');
+
+        if(select) {
+          select.addEventListener('change', () => {
+             const pId = parseInt(select.value);
+             const pObj = playersList.find(p => p.id === pId);
+             
+             inputs.forEach(inp => {
+               if (inp.type === 'checkbox') inp.checked = false;
+               else inp.value = '';
+             });
+
+             if (pObj) {
+               if (pObj.wins !== undefined) document.getElementById('inp_wins').value = pObj.wins;
+               if (pObj.losses !== undefined) document.getElementById('inp_losses').value = pObj.losses;
+               if (pObj.draws !== undefined) document.getElementById('inp_draws').value = pObj.draws;
+
+               if (pObj.matriz_raw) {
+                 const raw = pObj.matriz_raw;
+                 if (raw.tiros_totales) document.getElementById('inp_tiros_totales').value = raw.tiros_totales;
+                 if (raw.tiros_arco) document.getElementById('inp_tiros_arco').value = raw.tiros_arco;
+                 if (raw.goles) document.getElementById('inp_goles').value = raw.goles;
+                 if (raw.xg) document.getElementById('inp_xg').value = raw.xg;
+                 if (raw.precision_pases) document.getElementById('inp_precision_pases').value = raw.precision_pases;
+                 if (raw.cambio_formacion) document.getElementById('inp_cambio_formacion').checked = raw.cambio_formacion;
+                 if (raw.entradas_intentadas) document.getElementById('inp_entradas_intentadas').value = raw.entradas_intentadas;
+                 if (raw.entradas_ganadas) document.getElementById('inp_entradas_ganadas').value = raw.entradas_ganadas;
+                 if (raw.cursor_fallido) document.getElementById('inp_cursor_fallido').checked = raw.cursor_fallido;
+                 if (raw.precision_regates) document.getElementById('inp_precision_regates').value = raw.precision_regates;
+                 if (raw.green_timing) document.getElementById('inp_green_timing').checked = raw.green_timing;
+                 if (raw.nota_mental) document.getElementById('inp_nota_mental').value = raw.nota_mental;
+                 if (raw.habilidades) document.getElementById('inp_habilidades').value = raw.habilidades;
+               }
+             }
+
+             const guardadoLocal = localStorage.getItem('matriz_temp_' + pId);
+             if (guardadoLocal) {
+               const data = JSON.parse(guardadoLocal);
+               inputs.forEach(inp => {
+                 if (data[inp.name] !== undefined) {
+                   if (inp.type === 'checkbox') inp.checked = data[inp.name];
+                   else inp.value = data[inp.name];
+                 }
+               });
+             }
+          });
+
+          inputs.forEach(inp => {
+             inp.addEventListener('input', () => {
+                const pId = select.value;
+                if(!pId) return;
+                let guardado = JSON.parse(localStorage.getItem('matriz_temp_' + pId) || '{}');
+                if(inp.type === 'checkbox') guardado[inp.name] = inp.checked;
+                else guardado[inp.name] = inp.value;
+                localStorage.setItem('matriz_temp_' + pId, JSON.stringify(guardado));
+             });
+          });
+
+          form.addEventListener('submit', () => {
+             const pId = select.value;
+             if(pId) localStorage.removeItem('matriz_temp_' + pId);
+          });
+        }
+      });
+    </script>
+  {% else %}
+    <form action="/main-login" method="POST" class="space-y-3 max-w-sm mx-auto py-8">
+      <p class="text-xs text-red-400 font-semibold text-center">Área restringida. Ingresa tu contraseña de administración.</p>
+      <input type="text" name="main_user" placeholder="Usuario Main" required class="w-full bg-[#03080f]/90 border border-[#1d354d] rounded-xl px-3 py-2 text-xs text-white">
+      <input type="password" name="main_pass" placeholder="••••••••" required class="w-full bg-[#03080f]/90 border border-[#1d354d] rounded-xl px-3 py-2 text-xs text-white">
+      <button type="submit" class="w-full btn-amarillo py-2.5 rounded-xl font-streaming tracking-wide text-xs uppercase shadow-lg">ACCEDER</button>
+    </form>
+  {% endif %}
+</section>
+{% endblock %}

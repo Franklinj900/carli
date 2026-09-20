@@ -1,0 +1,348 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="w-full min-h-screen space-y-12 bg-transparent">
+
+  <!-- 1. SECCIÓN PRINCIPAL: PRESENTACIÓN Y VIDEO HERO -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center border-b border-[#1d354d] pb-12 px-4 md:px-8">
+    <div class="space-y-4">
+      <span class="text-xs font-bold text-[#FFE500] font-streaming tracking-widest uppercase bg-[#FFE500]/10 px-3 py-1 rounded-full border border-[#FFE500]/30 inline-block">
+        EL TEMPLO DEL GAMING EN CARACAS
+      </span>
+      <h2 class="text-3xl md:text-5xl font-extrabold text-white font-streaming tracking-wider uppercase leading-tight">
+        SOMOS COLISSEUM, <span class="text-[#38bdf8]">SOMOS LEYENDA</span>
+      </h2>
+      <p class="text-xs md:text-sm text-slate-300 leading-relaxed font-body">
+        <strong>Coliseum Gamer</strong> es la arena definitiva pensada para competir, entrenar, socializar y vivir la experiencia gamer en su máxima expresión en Caracas - El Valle. Nuestro objetivo es forjar campeones supremos en la arena con torneos épicos y tecnología de combate de punta.
+      </p>
+
+      <!-- NOTIFICACIONES DIRECTAS -->
+      {% if request is defined and request.query_params %}
+        {% if request.query_params.get('registro_exito') %}
+          <div class="bg-emerald-500/20 border border-emerald-500/50 text-emerald-300 p-2.5 rounded-xl text-xs font-bold text-center">¡REGISTRADO EXITOSAMENTE EN EL SISTEMA! YA PUEDES INSCRIBIRTE EN LOS TORNEOS.</div>
+        {% elif request.query_params.get('registro_error') %}
+          <div class="bg-red-500/20 border border-red-500/50 text-red-300 p-2.5 rounded-xl text-xs font-bold text-center">¡EL NICKNAME / USUARIO YA ESTÁ REGISTRADO! INTENTA CON OTRO.</div>
+        {% elif request.query_params.get('exito') %}
+          <div class="bg-emerald-500/20 border border-emerald-500/50 text-emerald-300 p-2.5 rounded-xl text-xs font-bold text-center">¡TE HAS INSCRITO AL TORNEO EXITOSAMENTE!</div>
+        {% elif request.query_params.get('error') == 'no_registrado' %}
+          <div class="bg-red-500/20 border border-red-500/50 text-red-300 p-2.5 rounded-xl text-xs font-bold text-center">¡NO ESTÁS REGISTRADO! DEBES REGISTRARTE PRIMERO PARA PODER INSCRIBIRTE EN UN TORNEO.</div>
+        {% elif request.query_params.get('error') == 'duplicado' %}
+          <div class="bg-amber-500/20 border border-amber-500/50 text-amber-200 p-2.5 rounded-xl text-xs font-bold text-center">¡YA ESTÁS INSCRITO EN ESTE TORNEO!</div>
+        {% endif %}
+      {% endif %}
+
+      <!-- GRUPO DE BOTONES ALINEADOS A LOS COLORES DEL LOGO -->
+      <div class="flex flex-wrap gap-2.5 pt-2">
+        <button type="button" onclick="openModal('modal-registro'); switchTabModal('tab-torneos');" class="bg-[#38bdf8] hover:bg-[#0284c7] text-[#04080f] font-extrabold px-5 py-2.5 rounded-xl text-xs uppercase font-streaming tracking-wider transition-all shadow-md flex items-center justify-center">
+          VER TORNEOS
+        </button>
+        <button type="button" onclick="openModal('modal-registro'); switchTabModal('tab-reg');" class="btn-amarillo px-5 py-2.5 rounded-xl text-xs font-extrabold uppercase font-streaming tracking-wider transition-all shadow-md">
+          REGISTRARSE
+        </button>
+        <button type="button" onclick="openModal('modal-registro'); switchTabModal('tab-insc');" class="bg-[#050b14] hover:bg-[#38bdf8]/20 text-[#38bdf8] border border-[#38bdf8] px-5 py-2.5 rounded-xl text-xs font-extrabold uppercase font-streaming tracking-wider transition-all shadow-md">
+          INSCRIBIRME A TORNEOS
+        </button>
+        <a href="https://share.google/4rwVR66cIRScgbn0L" target="_blank" class="bg-[#050b14] hover:bg-[#FFE500]/10 text-[#FFE500] border border-[#FFE500]/40 px-5 py-2.5 rounded-xl text-xs font-extrabold uppercase font-streaming tracking-wider transition-all flex items-center gap-1.5 shadow-md">
+          UBICACIÓN
+        </a>
+      </div>
+    </div>
+    
+    <!-- Video Principal -->
+    <div class="relative bg-black rounded-2xl overflow-hidden h-72 md:h-96 border border-[#38bdf8]/30 shadow-2xl group">
+      <video autoplay muted loop playsinline class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" onerror="this.style.display='none'; document.getElementById('hero-img').style.display='block';">
+        <source src="/static/nosotros_principal.mp4" type="video/mp4">
+        Tu navegador no soporta videos.
+      </video>
+      <img id="hero-img" src="/static/logo.jpg" alt="Coliseum Gamer" class="w-full h-full object-cover hidden">
+      <div class="absolute bottom-3 left-3 bg-black/70 backdrop-blur-md px-3 py-1 rounded-lg border border-[#38bdf8]/30">
+        <span class="text-[10px] text-white font-mono">ARENA OFICIAL - EL VALLE</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. SECCIÓN: MISIÓN, VISIÓN Y HONOR DE GLADIADOR -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center border-b border-[#1d354d] pb-12 px-4 md:px-8">
+    <div class="lg:col-span-5 relative rounded-2xl overflow-hidden h-80 border border-[#FFE500]/30 shadow-2xl">
+      <img src="/static/nosotros_mision_vision.jpg" alt="Misión y Visión Coliseum" class="w-full h-full object-cover hover:scale-105 transition-transform duration-700" onerror="this.src='/static/logo.jpg';">
+      <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-4">
+        <span class="text-xs text-[#FFE500] font-streaming tracking-wider font-bold">LEGADO, HONOR Y VICTORIA EN LA ARENA</span>
+      </div>
+    </div>
+
+    <div class="lg:col-span-7 space-y-8">
+      <div class="space-y-2">
+        <h3 class="text-sm font-bold font-streaming uppercase tracking-wider text-[#FFE500]">Nuestra Misión en el Coliseo</h3>
+        <p class="text-xs md:text-sm text-slate-300 leading-relaxed">
+          Forjar un entorno competitivo y recreativo de altísimo nivel, equipado con tecnología de última generación, pantallas de alta definición y recintos de combate diseñados para que cada gladiador desate su máximo poder en cada partida.
+        </p>
+      </div>
+
+      <div class="space-y-2 pt-4 border-t border-[#1d354d]/50">
+        <h3 class="text-sm font-bold font-streaming uppercase tracking-wider text-[#38bdf8]">Nuestra Visión y Trono</h3>
+        <p class="text-xs md:text-sm text-slate-300 leading-relaxed">
+          Consolidarnos como el imperio indiscutible de los deportes electrónicos en Caracas, expandiendo una hermandad de guerreros donde la disciplina, la estrategia y la pasión convierten a los mortales en leyendas eternas.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. SECCIÓN RESTRUCTURADA: ÁREAS, SALAS Y ZONAS COLISEUM (EN PANEL GLASS SEMITRANSPARENTE) -->
+  <div class="panel-glass rounded-2xl p-6 md:p-8 space-y-6 mx-4 md:mx-8 border border-[#38bdf8]/20 shadow-2xl">
+    <div class="text-center space-y-1 max-w-2xl mx-auto">
+      <span class="text-xs font-bold text-[#38bdf8] font-streaming tracking-widest uppercase bg-[#38bdf8]/10 px-3 py-1 rounded-full border border-[#38bdf8]/30 inline-block">
+        INSTALACIONES Y SALAS EN VIVO
+      </span>
+      <h3 class="text-xl md:text-3xl font-extrabold text-white font-streaming tracking-wider uppercase">
+        NUESTRAS ÁREAS DE COMBATE
+      </h3>
+      <p class="text-xs text-slate-300">
+        Explora la infraestructura interactiva de Coliseum Gamer: consolas de última generación, salas de torneos y zona de streaming.
+      </p>
+    </div>
+
+    <!-- Malla Interactiva Sin Márgenes (gap-0) con bordes redondeados y sombra de neón -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-0 rounded-2xl overflow-hidden border border-[#38bdf8]/30 shadow-2xl">
+      
+      <!-- Área 1: Consolas de Última Generación (Video 1) -->
+      <div class="relative group h-64 md:h-80 overflow-hidden bg-black">
+        <video autoplay muted loop playsinline class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+          <source src="/static/nosotros_video_1.mp4" type="video/mp4">
+          <source src="/static/nosotros-video-1.mp4" type="video/mp4">
+        </video>
+        <img src="/static/nosotros_galeria1.jpg" alt="Consolas de Última Generación" class="w-full h-full object-cover hidden group-hover:scale-110 transition-transform duration-700" onerror="this.src='/static/logo.jpg';">
+        <div class="absolute bottom-3 left-3 bg-black/75 backdrop-blur-md px-3 py-1 rounded-lg border border-[#38bdf8]/40 z-10 shadow-lg">
+          <span class="text-[10px] text-white font-mono uppercase font-bold tracking-wider">CONSOLAS DE ÚLTIMA GENERACIÓN</span>
+        </div>
+      </div>
+
+      <!-- Área 2: Salas y Torneos en Vivo Coliseum (Video 2) -->
+      <div class="relative group h-64 md:h-80 overflow-hidden bg-black">
+        <video autoplay muted loop playsinline class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+          <source src="/static/nosotros_video2.mp4" type="video/mp4">
+          <source src="/static/nosotros-video-2.mp4" type="video/mp4">
+        </video>
+        <img src="/static/nosotros_galeria2.jpg" alt="Zona de Torneos en Vivo" class="w-full h-full object-cover hidden group-hover:scale-110 transition-transform duration-700" onerror="this.src='/static/logo.jpg';">
+        <div class="absolute bottom-3 left-3 bg-black/75 backdrop-blur-md px-3 py-1 rounded-lg border border-[#FFE500]/50 z-10 shadow-lg">
+          <span class="text-[10px] text-[#FFE500] font-mono uppercase font-bold tracking-wider">SALAS Y TORNEOS EN VIVO COLISEUM</span>
+        </div>
+      </div>
+
+      <!-- Área 3: Zona de Streaming / Tu Arena, Tu Leyenda (Galería 1) -->
+      <div class="relative group h-64 md:h-80 overflow-hidden bg-black">
+        <img src="/static/nosotros_galeria1.jpg" alt="Zona de Streaming" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" onerror="this.src='/static/logo.jpg';">
+        <div class="absolute bottom-3 left-3 bg-black/75 backdrop-blur-md px-3 py-1 rounded-lg border border-[#38bdf8]/40 z-10 shadow-lg">
+          <span class="text-[10px] text-white font-mono uppercase font-bold tracking-wider">ZONA DE STREAMING - TU ARENA, TU LEYENDA</span>
+        </div>
+      </div>
+
+      <!-- Área 4: Organización y Competencia (Galería 2) -->
+      <div class="relative group h-64 md:h-80 overflow-hidden bg-black">
+        <img src="/static/nosotros_galeria2.jpg" alt="Organización y Competencia" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" onerror="this.src='/static/logo.jpg';">
+        <div class="absolute bottom-3 left-3 bg-black/75 backdrop-blur-md px-3 py-1 rounded-lg border border-[#FFE500]/50 z-10 shadow-lg">
+          <span class="text-[10px] text-white font-mono uppercase font-bold tracking-wider">ORGANIZACIÓN Y COMPETENCIA</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 4. SECCIÓN TEMÁTICA DE GLADIADORES Y BATALLA -->
+  <div class="panel-glass rounded-2xl p-6 md:p-8 space-y-6 mx-4 md:mx-8 border border-[#FFE500]/20 shadow-2xl">
+    <div class="text-center space-y-2 max-w-2xl mx-auto">
+      <h3 class="text-base md:text-xl font-extrabold text-[#FFE500] font-streaming tracking-wider uppercase">EL CÓDIGO DEL GLADIADOR DIGITAL</h3>
+      <p class="text-xs text-slate-300">En el Colisseum Gamer no venimos a participar, venimos a conquistar la gloria suprema en cada enfrentamiento.</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
+      <div class="bg-[#050b14]/80 p-5 rounded-xl border border-[#38bdf8]/30 space-y-2">
+        <h4 class="text-xs font-bold text-[#38bdf8] font-streaming uppercase tracking-wider">ENTRENAMIENTO SUPREMO</h4>
+        <p class="text-[11px] text-slate-400">Salas optimizadas con hardware de alta gama para perfeccionar tus reflejos y tácticas de combate diario.</p>
+      </div>
+      <div class="bg-[#050b14]/80 p-5 rounded-xl border border-[#FFE500]/30 space-y-2">
+        <h4 class="text-xs font-bold text-[#FFE500] font-streaming uppercase tracking-wider">BATALLAS EN VIVO</h4>
+        <p class="text-[11px] text-slate-400">Torneos presenciales con transmisiones épicas donde tu nombre quedará grabado en el trono de los campeones.</p>
+      </div>
+      <div class="bg-[#050b14]/80 p-5 rounded-xl border border-[#38bdf8]/30 space-y-2">
+        <h4 class="text-xs font-bold text-[#38bdf8] font-streaming uppercase tracking-wider">HERMANDAD DE LEYENDA</h4>
+        <p class="text-[11px] text-slate-400">Una comunidad unida por el respeto, la competencia justa y la pasión inquebrantable por el gaming.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. CARRUSEL INFINITO DE ENTRETENIMIENTO Y DIVERSIÓN -->
+  <section class="panel-glass rounded-2xl p-4 shadow-xl space-y-3 overflow-hidden mx-4 md:mx-8">
+    <h3 class="text-xs font-bold text-[#38bdf8] text-center font-streaming uppercase tracking-wider">ENTRETENIMIENTO Y DIVERSIÓN</h3>
+    <div class="overflow-hidden relative w-full">
+      <div class="carrusel-bucle gap-3">
+        <!-- BLOQUE 1 -->
+        <div class="bg-[#050b14]/90 p-2 rounded-xl border border-[#1d354d] flex flex-col items-center gap-1.5 shrink-0 min-w-[140px]">
+          <img src="/static/area-vip.jpg" alt="Área VIP" class="w-full h-20 object-cover rounded-lg border border-[#38bdf8]/30" onerror="this.src='/static/logo.jpg';">
+          <span class="text-xs font-bold text-white font-streaming">ÁREA VIP</span>
+        </div>
+        <div class="bg-[#050b14]/90 p-2 rounded-xl border border-[#1d354d] flex flex-col items-center gap-1.5 shrink-0 min-w-[140px]">
+          <img src="/static/salon-eventos.jpg" alt="Salón de Eventos" class="w-full h-20 object-cover rounded-lg border border-[#38bdf8]/30" onerror="this.src='/static/logo.jpg';">
+          <span class="text-xs font-bold text-white font-streaming">SALÓN DE EVENTOS</span>
+        </div>
+        <div class="bg-[#050b14]/90 p-2 rounded-xl border border-[#1d354d] flex flex-col items-center gap-1.5 shrink-0 min-w-[140px]">
+          <img src="/static/festejos.jpg" alt="Festejos" class="w-full h-20 object-cover rounded-lg border border-[#38bdf8]/30" onerror="this.src='/static/logo.jpg';">
+          <span class="text-xs font-bold text-white font-streaming">FESTEJOS</span>
+        </div>
+        <div class="bg-[#050b14]/90 p-2 rounded-xl border border-[#1d354d] flex flex-col items-center gap-1.5 shrink-0 min-w-[140px]">
+          <img src="/static/servicio-tecnico.jpg" alt="Servicio Técnico" class="w-full h-20 object-cover rounded-lg border border-[#38bdf8]/30" onerror="this.src='/static/logo.jpg';">
+          <span class="text-xs font-bold text-white font-streaming">SERVICIO TÉCNICO</span>
+        </div>
+        <div class="bg-[#050b14]/90 p-2 rounded-xl border border-[#1d354d] flex flex-col items-center gap-1.5 shrink-0 min-w-[140px]">
+          <img src="/static/copias-impresion.jpg" alt="Copias e Impresión" class="w-full h-20 object-cover rounded-lg border border-[#38bdf8]/30" onerror="this.src='/static/logo.jpg';">
+          <span class="text-xs font-bold text-white font-streaming">COPIAS E IMPRESIÓN</span>
+        </div>
+
+        <!-- BLOQUE 2 (DUPLICADO PARA CONTINUIDAD INFINITA) -->
+        <div class="bg-[#050b14]/90 p-2 rounded-xl border border-[#1d354d] flex flex-col items-center gap-1.5 shrink-0 min-w-[140px]">
+          <img src="/static/area-vip.jpg" alt="Área VIP" class="w-full h-20 object-cover rounded-lg border border-[#38bdf8]/30" onerror="this.src='/static/logo.jpg';">
+          <span class="text-xs font-bold text-white font-streaming">ÁREA VIP</span>
+        </div>
+        <div class="bg-[#050b14]/90 p-2 rounded-xl border border-[#1d354d] flex flex-col items-center gap-1.5 shrink-0 min-w-[140px]">
+          <img src="/static/salon-eventos.jpg" alt="Salón de Eventos" class="w-full h-20 object-cover rounded-lg border border-[#38bdf8]/30" onerror="this.src='/static/logo.jpg';">
+          <span class="text-xs font-bold text-white font-streaming">SALÓN DE EVENTOS</span>
+        </div>
+        <div class="bg-[#050b14]/90 p-2 rounded-xl border border-[#1d354d] flex flex-col items-center gap-1.5 shrink-0 min-w-[140px]">
+          <img src="/static/festejos.jpg" alt="Festejos" class="w-full h-20 object-cover rounded-lg border border-[#38bdf8]/30" onerror="this.src='/static/logo.jpg';">
+          <span class="text-xs font-bold text-white font-streaming">FESTEJOS</span>
+        </div>
+
+        <div class="bg-[#050b14]/90 p-2 rounded-xl border border-[#1d354d] flex flex-col items-center gap-1.5 shrink-0 min-w-[140px]">
+          <img src="/static/servicio-tecnico.jpg" alt="Servicio Técnico" class="w-full h-20 object-cover rounded-lg border border-[#38bdf8]/30" onerror="this.src='/static/logo.jpg';">
+          <span class="text-xs font-bold text-white font-streaming">SERVICIO TÉCNICO</span>
+        </div>
+        <div class="bg-[#050b14]/90 p-2 rounded-xl border border-[#1d354d] flex flex-col items-center gap-1.5 shrink-0 min-w-[140px]">
+          <img src="/static/copias-impresion.jpg" alt="Copias e Impresión" class="w-full h-20 object-cover rounded-lg border border-[#38bdf8]/30" onerror="this.src='/static/logo.jpg';">
+          <span class="text-xs font-bold text-white font-streaming">COPIAS E IMPRESIÓN</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- MODAL CON PESTAÑAS PARA VER TORNEOS, REGISTRO E INSCRIPCIÓN -->
+<div id="modal-registro" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+  <div class="panel-glass rounded-2xl p-6 w-full max-w-md border border-[#38bdf8]/40 space-y-4 relative shadow-2xl bg-[#050b14]/95">
+    <div class="flex justify-between items-center border-b border-[#1d354d] pb-3">
+      <div class="flex flex-wrap gap-1.5">
+        <button type="button" onclick="switchTabModal('tab-torneos')" id="btn-tab-torneos" class="text-[11px] font-bold font-streaming uppercase px-2.5 py-1.5 rounded-xl bg-[#38bdf8] text-[#08101a]">VER TORNEOS</button>
+        <button type="button" onclick="switchTabModal('tab-reg')" id="btn-tab-reg" class="text-[11px] font-bold font-streaming uppercase px-2.5 py-1.5 rounded-xl bg-[#03080f] text-[#8aa3b8] border border-[#1d354d]">REGISTRARSE</button>
+        <button type="button" onclick="switchTabModal('tab-insc')" id="btn-tab-insc" class="text-[11px] font-bold font-streaming uppercase px-2.5 py-1.5 rounded-xl bg-[#03080f] text-[#8aa3b8] border border-[#1d354d]">INSCRIBIRME</button>
+      </div>
+      <button onclick="closeModal('modal-registro')" class="text-slate-400 hover:text-white font-bold text-lg p-1 ml-1">✕</button>
+    </div>
+
+    <!-- Pestaña Ver Torneos -->
+    <div id="tab-torneos" class="space-y-3">
+      <h3 class="text-xs font-bold text-[#FFE500] font-streaming uppercase">TORNEOS DISPONIBLES</h3>
+      {% set lista_torneos = torneos_activos if torneos_activos is defined else [] %}
+      {% if lista_torneos %}
+        <div class="space-y-2.5 max-h-60 overflow-y-auto pr-1">
+          {% for t in lista_torneos %}
+            {% set t_key = (t.titulo ~ ' (' ~ t.subtitulo ~ ')') if t.subtitulo else t.titulo %}
+            <div class="p-3 rounded-xl border border-[#1d354d]/50 space-y-1.5 bg-[#03080f]">
+              <h4 class="text-xs font-bold text-white font-streaming">{{ t.titulo }}{% if t.subtitulo %} ({{ t.subtitulo }}){% endif %}</h4>
+              <p class="text-[10px] text-[#38bdf8]"> {{ t.fecha_inicio if t.fecha_inicio else 'Por definir' }} | Premio: {{ t.premio if t.premio else 'Por definir' }}</p>
+              {% if t.reglas %}
+                <p class="text-[10px] text-[#8aa3b8] italic"> Reglas: {{ t.reglas }}</p>
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+        <div class="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-2.5 text-center">
+          <p class="text-[10px] text-emerald-300 font-semibold">
+            Si quieres reservar un torneo con el administrador, ponte en contacto al WhatsApp:
+            <a href="https://wa.me/584129697011" target="_blank" class="underline font-bold text-emerald-400">+58 412-9697011</a>
+          </p>
+        </div>
+      {% else %}
+        <div class="space-y-3 py-2 text-center">
+          <p class="text-xs text-[#8aa3b8] italic">No hay torneos disponibles en este momento.</p>
+          <div class="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-3">
+            <p class="text-[11px] text-emerald-300 font-semibold">
+              Contáctate al número de WhatsApp para reservar un torneo con el administrador:
+            </p>
+            <a href="https://wa.me/584129697011" target="_blank" class="inline-block mt-1.5 bg-emerald-500 hover:bg-emerald-400 text-black px-3 py-1.5 rounded-lg text-xs font-bold font-streaming tracking-wider transition-all">
+              +58 412-9697011
+            </a>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Pestaña Registro -->
+    <div id="tab-reg" class="space-y-3 hidden">
+      <h3 class="text-xs font-bold text-[#FFE500] font-streaming uppercase">REGISTRAR NUEVO GLADIADOR</h3>
+      <form action="/registrar-gladiador" method="POST" class="space-y-2.5">
+        <input type="text" name="nombre" placeholder="Nombre Real" required class="w-full bg-[#03080f]/90 border border-[#1d354d] rounded-xl px-3 py-2 text-xs text-white placeholder-[#546e7a]">
+        <input type="text" name="apellido" placeholder="Apellido Real" required class="w-full bg-[#03080f]/90 border border-[#1d354d] rounded-xl px-3 py-2 text-xs text-white placeholder-[#546e7a]">
+        <input type="number" name="edad" placeholder="Edad" required class="w-full bg-[#03080f]/90 border border-[#1d354d] rounded-xl px-3 py-2 text-xs text-white placeholder-[#546e7a]">
+        <input type="text" name="nickname" placeholder="Nick de Gladiador" required class="w-full bg-[#03080f]/90 border border-[#1d354d] rounded-xl px-3 py-2 text-xs text-white placeholder-[#546e7a]">
+        <input type="text" name="telefono" placeholder="Número de Teléfono" required class="w-full bg-[#03080f]/90 border border-[#1d354d] rounded-xl px-3 py-2 text-xs text-white placeholder-[#546e7a]">
+        <input type="password" name="password" placeholder="Contraseña Privada" required class="w-full bg-[#03080f]/90 border border-[#1d354d] rounded-xl px-3 py-2 text-xs text-white placeholder-[#546e7a]">
+        <button type="submit" class="w-full btn-amarillo py-2 rounded-xl text-xs uppercase font-streaming">GUARDAR GLADIADOR</button>
+      </form>
+    </div>
+
+    <!-- Pestaña Inscripción -->
+    <div id="tab-insc" class="space-y-3 hidden">
+      <h3 class="text-xs font-bold text-[#FFE500] font-streaming uppercase">INSCRIBIRSE A TORNEOS</h3>
+      {% set lista_torneos = torneos_activos if torneos_activos is defined else [] %}
+      {% if lista_torneos %}
+        <div class="space-y-2.5 max-h-60 overflow-y-auto pr-1">
+          {% for t in lista_torneos %}
+            {% set t_key = (t.titulo ~ ' (' ~ t.subtitulo ~ ')') if t.subtitulo else t.titulo %}
+            <div class="p-3 rounded-xl border border-[#1d354d]/50 space-y-1.5 bg-[#03080f]">
+              <h4 class="text-xs font-bold text-white font-streaming">{{ t.titulo }}{% if t.subtitulo %} ({{ t.subtitulo }}){% endif %}</h4>
+              <p class="text-[10px] text-[#38bdf8]"> {{ t.fecha_inicio if t.fecha_inicio else 'Por definir' }} | 💰 Premio: {{ t.premio if t.premio else 'Por definir' }}</p>
+              <form action="/inscribir-torneo" method="POST" class="space-y-1.5 pt-1">
+                <input type="hidden" name="tournament_name" value="{{ t_key }}">
+                <input type="text" name="nickname" placeholder="Tu Nickname" required class="w-full bg-[#08101a] border border-[#1d354d] rounded-lg px-2 py-1 text-xs text-white placeholder-[#546e7a]">
+                <button type="submit" class="w-full btn-amarillo py-1.5 rounded-lg text-[10px] uppercase font-streaming">INSCRIBIRME</button>
+              </form>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="text-[10px] text-[#8aa3b8] italic text-center py-4">No hay torneos activos en este momento.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<script>
+  function switchTabModal(activeTabId) {
+    const tabs = ['tab-torneos', 'tab-reg', 'tab-insc'];
+    const btns = {
+      'tab-torneos': document.getElementById('btn-tab-torneos'),
+      'tab-reg': document.getElementById('btn-tab-reg'),
+      'tab-insc': document.getElementById('btn-tab-insc')
+    };
+
+    tabs.forEach(tabId => {
+      const el = document.getElementById(tabId);
+      if (el) {
+        if (tabId === activeTabId) {
+          el.classList.remove('hidden');
+        } else {
+          el.classList.add('hidden');
+        }
+      }
+    });
+
+    for (const [tabId, btn] of Object.entries(btns)) {
+      if (btn) {
+        if (tabId === activeTabId) {
+          btn.className = "text-[11px] font-bold font-streaming uppercase px-2.5 py-1.5 rounded-xl bg-[#38bdf8] text-[#08101a]";
+        } else {
+          btn.className = "text-[11px] font-bold font-streaming uppercase px-2.5 py-1.5 rounded-xl bg-[#03080f] text-[#8aa3b8] border border-[#1d354d]";
+        }
+      }
+    }
+  }
+</script>
+{% endblock %}

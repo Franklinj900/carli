@@ -1,0 +1,367 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="space-y-6">
+
+  {% if not active_tab or active_tab == 'inicio' %}
+    
+    {% if request is defined and request.query_params and request.query_params.get('registro_exito') %}
+      <div class="bg-emerald-500/20 border border-emerald-500/50 text-emerald-300 px-4 py-2.5 rounded-xl text-xs font-bold font-streaming text-center animate-pulse">¡GLADIADOR REGISTRADO EXITOSAMENTE EN LA BASE DE DATOS!</div>
+    {% endif %}
+
+    {% if error_msg or (request is defined and request.query_params and request.query_params.get('registro_error')) %}
+      <div class="bg-red-500/20 border border-red-500/50 text-red-300 px-4 py-2.5 rounded-xl text-xs font-bold font-streaming text-center">{{ error_msg if error_msg else '¡EL NICKNAME YA SE ENCUENTRA REGISTRADO!' }}</div>
+    {% endif %}
+
+    <!-- REGISTRO DE NUEVO GLADIADOR -->
+    <section class="panel-glass rounded-2xl p-5 shadow-xl space-y-4">
+      <h2 class="text-sm font-bold text-[#FFE500] font-streaming tracking-wider uppercase flex items-center gap-2">REGISTRAR NUEVO GLADIADOR</h2>
+      <form action="/registrar-gladiador" method="POST" class="space-y-3">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="relative">
+            <input type="text" name="id" placeholder="ID" readonly value="{{ next_id if next_id is defined else 1 }}" class="w-full bg-[#03080f]/90 border border-[#1d354d] rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+            <span class="absolute right-2 top-2 text-[9px] text-[#8aa3b8] font-mono">AUTO ID</span>
+          </div>
+          <input type="text" name="nombre" placeholder="Nombre Real" required class="w-full bg-[#03080f]/90 border border-[#1d354d] rounded-xl px-3 py-2 text-xs text-white placeholder-[#546e7a] focus:outline-none focus:border-[#38bdf8]">
+          <input type="text" name="apellido" placeholder="Apellido Real" required class="w-full bg-[#03080f]/90 border border-[#1d354d] rounded-xl px-3 py-2 text-xs text-white placeholder-[#546e7a] focus:outline-none focus:border-[#38bdf8]">
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <input type="number" name="edad" placeholder="Edad" required class="w-full bg-[#03080f]/90 border border-[#1d354d] rounded-xl px-3 py-2 text-xs text-white placeholder-[#546e7a] focus:outline-none focus:border-[#38bdf8]">
+          <input type="text" name="nickname" placeholder="Nick de Gladiador" required class="w-full bg-[#03080f]/90 border border-[#1d354d] rounded-xl px-3 py-2 text-xs text-white placeholder-[#546e7a] focus:outline-none focus:border-[#38bdf8]">
+          <input type="text" name="telefono" placeholder="Número de Teléfono" required class="w-full bg-[#03080f]/90 border border-[#1d354d] rounded-xl px-3 py-2 text-xs text-white placeholder-[#546e7a] focus:outline-none focus:border-[#38bdf8]">
+        </div>
+        <input type="password" name="password" placeholder="Contraseña Privada" required class="w-full bg-[#03080f]/90 border border-[#1d354d] rounded-xl px-3 py-2 text-xs text-white placeholder-[#546e7a] focus:outline-none focus:border-[#38bdf8]">
+        <button type="submit" class="w-full btn-amarillo py-2.5 rounded-xl font-streaming tracking-wide text-xs uppercase shadow-lg">GUARDAR GLADIADOR EN EL SISTEMA</button>
+      </form>
+    </section>
+
+    <!-- TABLA DE CLASIFICACIÓN GENERAL -->
+    <section class="panel-glass rounded-2xl p-5 shadow-xl space-y-4">
+      <h2 class="text-sm font-bold text-[#38bdf8] font-streaming tracking-wider uppercase flex items-center gap-2">TABLA DE CLASIFICACIÓN GENERAL</h2>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs">
+          <thead>
+            <tr class="border-b border-[#1d354d] text-[#38bdf8] font-streaming tracking-wider">
+              <th class="py-2.5 px-3">POS</th>
+              <th class="py-2.5 px-3">GLADIADOR</th>
+              <th class="py-2.5 px-3">RÉCORD (V - D - E)</th>
+              <th class="py-2.5 px-3">PUNTOS</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-[#1d354d]/50 text-[#cbd5e1]">
+            {% set lista_gladiadores = usuarios_registrados if usuarios_registrados is defined and usuarios_registrados else [] %}
+            {% if lista_gladiadores %}
+              {% set gladiadores_ordenados = lista_gladiadores | sort(attribute='points', reverse=True) %}
+              {% for g in gladiadores_ordenados %}
+                <tr class="hover:bg-[#38bdf8]/5 transition-colors">
+                  <td class="py-2.5 px-3 font-bold {% if loop.index == 1 and g.points is defined and g.points > 0 %}text-[#FFE500]{% elif loop.index == 2 %}text-gray-300{% elif loop.index == 3 %}text-amber-600{% else %}text-[#8aa3b8]{% endif %}">
+                    #{{ loop.index }} 
+                    {% if loop.index == 1 and g.points is defined and g.points > 0 %}
+                      <span class="ml-1 text-[10px] bg-[#FFE500]/20 text-[#FFE500] border border-[#FFE500]/50 px-1.5 py-0.5 rounded font-streaming">LÍDER / MÁXIMUS</span>
+                    {% endif %}
+                  </td>
+                  <td class="py-2.5 px-3 font-bold text-white">{{ g.nickname }}</td>
+                  <td class="py-2.5 px-3 text-[#38bdf8] font-mono">{{ g.wins if g.wins is defined else 0 }}W - {{ g.losses if g.losses is defined else 0 }}L - {{ g.draws if g.draws is defined else 0 }}E</td>
+                  <td class="py-2.5 px-3 font-bold text-[#FFE500]">{{ g.points if g.points is defined and g.points is not none else 0 }} PTS</td>
+                </tr>
+              {% endfor %}
+            {% else %}
+              <tr><td colspan="4" class="py-4 text-center text-[#8aa3b8] italic">No hay gladiadores registrados aún en el sistema.</td></tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- CARRUSEL INFINITO DE SERVICIOS -->
+    <section class="panel-glass rounded-2xl p-4 shadow-xl space-y-3 overflow-hidden">
+      <h3 class="text-xs font-bold text-[#38bdf8] text-center font-streaming uppercase tracking-wider">ENTRETENIMIENTO Y SERVICIOS DEL COLISEO</h3>
+      <div class="overflow-hidden relative w-full">
+        <div class="carrusel-bucle gap-3">
+          <!-- BLOQUE 1 -->
+          <div class="bg-[#050b14]/90 p-2 rounded-xl border border-[#1d354d] flex flex-col items-center gap-1.5 shrink-0 min-w-[140px]">
+            <img src="/static/area-vip.jpg" alt="Área VIP" class="w-full h-20 object-cover rounded-lg border border-[#38bdf8]/30" onerror="this.src='/static/logo.jpg';">
+            <span class="text-xs font-bold text-white font-streaming">ÁREA VIP</span>
+          </div>
+          <div class="bg-[#050b14]/90 p-2 rounded-xl border border-[#1d354d] flex flex-col items-center gap-1.5 shrink-0 min-w-[140px]">
+            <img src="/static/salon-eventos.jpg" alt="Salón de Eventos" class="w-full h-20 object-cover rounded-lg border border-[#38bdf8]/30" onerror="this.src='/static/logo.jpg';">
+            <span class="text-xs font-bold text-white font-streaming">SALÓN DE EVENTOS</span>
+          </div>
+          <div class="bg-[#050b14]/90 p-2 rounded-xl border border-[#1d354d] flex flex-col items-center gap-1.5 shrink-0 min-w-[140px]">
+            <img src="/static/festejos.jpg" alt="Festejos" class="w-full h-20 object-cover rounded-lg border border-[#38bdf8]/30" onerror="this.src='/static/logo.jpg';">
+            <span class="text-xs font-bold text-white font-streaming">FESTEJOS</span>
+          </div>
+          <!-- BROMA DEL CARRUSEL RESTAURADA -->
+          <div class="bg-[#050b14]/90 p-2 rounded-xl border border-[#FFE500]/50 flex flex-col items-center gap-1.5 shrink-0 min-w-[140px]">
+            <img src="/static/logo.jpg" alt="Terapia Post-Derrota" class="w-full h-20 object-cover rounded-lg border border-[#FFE500]/40" onerror="this.src='/static/logo.jpg';">
+            <span class="text-xs font-bold text-[#FFE500] font-streaming text-center">TERAPIA POST-DERROTA</span>
+          </div>
+          <div class="bg-[#050b14]/90 p-2 rounded-xl border border-[#1d354d] flex flex-col items-center gap-1.5 shrink-0 min-w-[140px]">
+            <img src="/static/servicio-tecnico.jpg" alt="Servicio Técnico" class="w-full h-20 object-cover rounded-lg border border-[#38bdf8]/30" onerror="this.src='/static/logo.jpg';">
+            <span class="text-xs font-bold text-white font-streaming">SERVICIO TÉCNICO</span>
+          </div>
+          <div class="bg-[#050b14]/90 p-2 rounded-xl border border-[#1d354d] flex flex-col items-center gap-1.5 shrink-0 min-w-[140px]">
+            <img src="/static/copias-impresion.jpg" alt="Copias e Impresión" class="w-full h-20 object-cover rounded-lg border border-[#38bdf8]/30" onerror="this.src='/static/logo.jpg';">
+            <span class="text-xs font-bold text-white font-streaming">COPIAS E IMPRESIÓN</span>
+          </div>
+
+          <!-- BLOQUE 2 (DUPLICADO PARA CONTINUIDAD INFINITA) -->
+          <div class="bg-[#050b14]/90 p-2 rounded-xl border border-[#1d354d] flex flex-col items-center gap-1.5 shrink-0 min-w-[140px]">
+            <img src="/static/area-vip.jpg" alt="Área VIP" class="w-full h-20 object-cover rounded-lg border border-[#38bdf8]/30" onerror="this.src='/static/logo.jpg';">
+            <span class="text-xs font-bold text-white font-streaming">ÁREA VIP</span>
+          </div>
+          <div class="bg-[#050b14]/90 p-2 rounded-xl border border-[#1d354d] flex flex-col items-center gap-1.5 shrink-0 min-w-[140px]">
+            <img src="/static/salon-eventos.jpg" alt="Salón de Eventos" class="w-full h-20 object-cover rounded-lg border border-[#38bdf8]/30" onerror="this.src='/static/logo.jpg';">
+            <span class="text-xs font-bold text-white font-streaming">SALÓN DE EVENTOS</span>
+          </div>
+          <div class="bg-[#050b14]/90 p-2 rounded-xl border border-[#1d354d] flex flex-col items-center gap-1.5 shrink-0 min-w-[140px]">
+            <img src="/static/festejos.jpg" alt="Festejos" class="w-full h-20 object-cover rounded-lg border border-[#38bdf8]/30" onerror="this.src='/static/logo.jpg';">
+            <span class="text-xs font-bold text-white font-streaming">FESTEJOS</span>
+          </div>
+          <!-- BROMA DEL CARRUSEL RESTAURADA (DUPLICADO) -->
+          <div class="bg-[#050b14]/90 p-2 rounded-xl border border-[#FFE500]/50 flex flex-col items-center gap-1.5 shrink-0 min-w-[140px]">
+            <img src="/static/logo.jpg" alt="Terapia Post-Derrota" class="w-full h-20 object-cover rounded-lg border border-[#FFE500]/40" onerror="this.src='/static/logo.jpg';">
+            <span class="text-xs font-bold text-[#FFE500] font-streaming text-center">TERAPIA POST-DERROTA</span>
+          </div>
+          <div class="bg-[#050b14]/90 p-2 rounded-xl border border-[#1d354d] flex flex-col items-center gap-1.5 shrink-0 min-w-[140px]">
+            <img src="/static/servicio-tecnico.jpg" alt="Servicio Técnico" class="w-full h-20 object-cover rounded-lg border border-[#38bdf8]/30" onerror="this.src='/static/logo.jpg';">
+            <span class="text-xs font-bold text-white font-streaming">SERVICIO TÉCNICO</span>
+          </div>
+          <div class="bg-[#050b14]/90 p-2 rounded-xl border border-[#1d354d] flex flex-col items-center gap-1.5 shrink-0 min-w-[140px]">
+            <img src="/static/copias-impresion.jpg" alt="Copias e Impresión" class="w-full h-20 object-cover rounded-lg border border-[#38bdf8]/30" onerror="this.src='/static/logo.jpg';">
+            <span class="text-xs font-bold text-white font-streaming">COPIAS E IMPRESIÓN</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  <!-- TORNEOS ACTIVOS Y CUADRANTE DE ELIMINACIÓN -->
+  {% elif active_tab == 'torneos_activos' %}
+    <section class="panel-glass rounded-2xl p-6 shadow-2xl space-y-6 min-h-[500px] border border-[#f97316]/20 relative">
+      <div class="text-center space-y-2 border-b border-white/10 pb-4">
+        <h2 class="text-xl font-bold text-[#f97316] font-streaming tracking-wider uppercase flex items-center justify-center gap-2">GENERADOR DE CUADRANTE DE BATALLA</h2>
+        <p class="text-[11px] text-[#8aa3b8]">Sigue el destino de las eliminatorias y la gran final en el coliseo</p>
+      </div>
+
+      {% set es_admin = (is_main is defined and is_main) or (session is defined and session.is_main) or (request is defined and request.session and request.session.get('is_main')) %}
+
+      {% set tiene_brackets = False %}
+      {% if brackets_torneos is defined and brackets_torneos %}
+        {% for torneo_nombre, datos in brackets_torneos.items() %}
+          {% if datos.combates is defined and datos.combates and datos.combates | length > 0 %}
+            {% set tiene_brackets = True %}
+            <div class="bg-[#121826] border border-[#1e293b] rounded-xl p-5 overflow-x-auto shadow-inner relative space-y-4">
+              <div class="flex justify-between items-center mb-2">
+                <h3 class="text-[#38bdf8] font-bold font-streaming uppercase tracking-wider text-sm">{{ torneo_nombre }}</h3>
+                <span class="bg-[#1e293b] text-gray-300 px-3 py-1 rounded text-[10px] border border-gray-600 font-bold uppercase">{{ datos.estado if datos.estado is defined else 'Activo' }}</span>
+              </div>
+
+              <!-- PANEL DE EDICIÓN EXCLUSIVO PARA ADMINISTRADOR -->
+              {% if es_admin %}
+                <div class="bg-[#050b14]/90 p-3.5 rounded-xl border border-[#f97316]/40 space-y-3 my-3">
+                  <div class="flex items-center justify-between border-b border-[#1d354d] pb-2">
+                    <span class="text-xs font-bold text-[#FFE500] font-streaming uppercase tracking-wider flex items-center gap-1.5">
+                      ⚙️ Panel Admin - Modificar Resultado de Enfrentamiento
+                    </span>
+                    <span class="text-[9px] bg-[#f97316]/20 text-[#f97316] border border-[#f97316]/40 px-2 py-0.5 rounded font-bold font-streaming">SOLO ADMINISTRADOR</span>
+                  </div>
+
+                  <form action="/main/actualizar-resultado-combate" method="POST" class="grid grid-cols-1 sm:grid-cols-4 gap-2 items-end">
+                    <input type="hidden" name="tournament_name" value="{{ torneo_nombre }}">
+                    
+                    <div class="col-span-1 space-y-1">
+                      <label class="text-[9px] text-[#8aa3b8] font-streaming uppercase">COMBATE / CRUCE</label>
+                      <select name="match_index" required class="w-full bg-[#03080f] border border-[#1d354d] rounded-lg px-2.5 py-1.5 text-xs text-white">
+                        {% for c in datos.combates %}
+                          <option value="{{ loop.index0 }}">Cruce {{ loop.index }}: {{ c.p1 }} vs {{ c.p2 }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+
+                    <div class="col-span-1 space-y-1">
+                      <label class="text-[9px] text-[#8aa3b8] font-streaming uppercase font-bold">SELECCIONAR GANADOR O EMPATE</label>
+                      <select name="resultado_ganador" required class="w-full bg-[#03080f] border border-[#1d354d] rounded-xl px-2.5 py-1.5 text-xs text-[#FFE500] font-bold">
+                        <option value="p1">Ganador: Jugador 1 (P1)</option>
+                        <option value="p2">Ganador: Jugador 2 (P2)</option>
+                        <option value="empate">🤝 EMPATE / TABLAS</option>
+                      </select>
+                    </div>
+
+                    <div class="col-span-1 space-y-1">
+                      <label class="text-[9px] text-[#8aa3b8] font-streaming uppercase">MARCADOR (P1 - P2)</label>
+                      <div class="flex gap-1">
+                        <input type="number" name="score_p1" placeholder="P1" value="0" min="0" class="w-1/2 bg-[#03080f] border border-[#1d354d] rounded px-2 py-1 text-xs text-center text-white">
+                        <input type="number" name="score_p2" placeholder="P2" value="0" min="0" class="w-1/2 bg-[#03080f] border border-[#1d354d] rounded px-2 py-1 text-xs text-center text-white">
+                      </div>
+                    </div>
+
+                    <button type="submit" class="col-span-1 bg-[#f97316] hover:bg-[#ea580c] text-white py-1.5 px-3 rounded-lg text-xs font-bold font-streaming tracking-wider transition-all shadow">
+                      REGISTRAR Y AVANZAR
+                    </button>
+                  </form>
+                </div>
+              {% endif %}
+
+              <!-- VISUALIZADOR DEL CUADRANTE BRACKET CON EDICIÓN INLINE -->
+              <div class="bracket-container">
+                <div class="bracket-col">
+                  <div class="bracket-col-title">Ronda 1</div>
+                  {% for c in datos.combates %}
+                    <div class="match-pair">
+                      {% if es_admin %}
+                        <!-- VISTA DE EDICIÓN EN CEROS / EDICIÓN DIRECTA PARA EL ADMINISTRADOR -->
+                        <form action="/main/actualizar-resultado-combate" method="POST" class="match-box border border-[#f97316]/60 shadow-lg">
+                          <input type="hidden" name="tournament_name" value="{{ torneo_nombre }}">
+                          <input type="hidden" name="match_index" value="{{ loop.index0 }}">
+
+                          <div class="match-player">
+                            <span class="match-seed">1</span>
+                            <span class="match-name {% if c.ganador == c.p1 or c.ganador == 'p1' %}winner{% endif %}">{{ c.p1 }}</span>
+                            <input type="number" name="score_p1" value="{{ c.s1 if c.s1 is defined else 0 }}" min="0" class="w-7 h-full bg-[#08101a] text-[#FFE500] font-bold text-center border-l border-[#334155] focus:outline-none focus:bg-[#1e293b]">
+                          </div>
+
+                          <div class="match-player">
+                            <span class="match-seed">2</span>
+                            <span class="match-name {% if c.ganador == c.p2 or c.ganador == 'p2' %}winner{% endif %}">{{ c.p2 }}</span>
+                            <input type="number" name="score_p2" value="{{ c.s2 if c.s2 is defined else 0 }}" min="0" class="w-7 h-full bg-[#08101a] text-[#FFE500] font-bold text-center border-l border-[#334155] focus:outline-none focus:bg-[#1e293b]">
+                          </div>
+
+                          <div class="flex items-center justify-between gap-1 p-1 bg-[#050b14] border-t border-[#334155]">
+                            <select name="resultado_ganador" class="w-full bg-[#03080f] text-[#FFE500] text-[8px] font-bold rounded px-1 py-0.5 border border-[#334155]">
+                              <option value="p1" {% if c.ganador == c.p1 or c.ganador == 'p1' %}selected{% endif %}>Gana {{ c.p1 }}</option>
+                              <option value="p2" {% if c.ganador == c.p2 or c.ganador == 'p2' %}selected{% endif %}>Gana {{ c.p2 }}</option>
+                              <option value="empate" {% if c.ganador == 'empate' %}selected{% endif %}>Empate</option>
+                            </select>
+                            <button type="submit" title="Guardar resultado" class="bg-[#f97316] hover:bg-[#ea580c] text-white text-[9px] font-bold px-1.5 py-0.5 rounded uppercase shrink-0">
+                              💾
+                            </button>
+                          </div>
+                        </form>
+                      {% else %}
+                        <!-- VISTA ESTÁTICA PARA VISITANTES -->
+                        <div class="match-box">
+                          <div class="match-player">
+                            <span class="match-seed">1</span>
+                            <span class="match-name {% if c.ganador == c.p1 or c.ganador == 'p1' %}winner{% endif %}">{{ c.p1 }}</span>
+                            <span class="match-score {% if c.ganador == c.p1 or c.ganador == 'p1' %}winner{% endif %}">{{ c.s1 if c.s1 is defined else 0 }}</span>
+                          </div>
+                          <div class="match-player">
+                            <span class="match-seed">2</span>
+                            <span class="match-name {% if c.ganador == c.p2 or c.ganador == 'p2' %}winner{% endif %}">{{ c.p2 }}</span>
+                            <span class="match-score {% if c.ganador == c.p2 or c.ganador == 'p2' %}winner{% endif %}">{{ c.s2 if c.s2 is defined else 0 }}</span>
+                          </div>
+                        </div>
+                      {% endif %}
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+
+      {% if not tiene_brackets %}
+        <div class="text-center py-12 space-y-3">
+          <p class="text-sm text-[#8aa3b8] italic">No hay cuadrantes sorteados activos en este momento.</p>
+          {% if es_admin %}
+            <p class="text-xs text-[#FFE500]">Puedes realizar el sorteo de cruces desde el Panel de Administración.</p>
+          {% endif %}
+        </div>
+      {% endif %}
+    </section>
+
+  <!-- SECCIÓN UNIFICADA: MI PERFIL -->
+  {% elif active_tab == 'perfil' %}
+    <section class="panel-glass rounded-2xl p-6 shadow-xl border border-[#38bdf8]/30 space-y-6">
+      
+      <!-- CABECERA Y DATOS GENERALES -->
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-[#38bdf8]/20 pb-6">
+        <div class="flex items-center gap-4 text-center sm:text-left">
+          <div class="w-16 h-16 rounded-full border-2 border-[#FFE500] bg-[#050b14] overflow-hidden p-1 flex items-center justify-center shrink-0 shadow-lg">
+            <img src="/static/logo.jpg" alt="Perfil" class="w-full h-full object-cover rounded-full" onerror="this.src='https://cdn-icons-png.flaticon.com/512/807/807262.png';">
+          </div>
+          <div>
+            <h2 class="text-xl font-extrabold text-white font-streaming tracking-wider flex items-center justify-center sm:justify-start gap-2">
+              {{ current_user.nickname if current_user else 'GLADIADOR' }}
+              {% if current_user and current_user.points is defined and current_user.points > 0 and maximus is defined and maximus and current_user.nickname == maximus.nickname %}
+                <span class="bg-[#FFE500]/20 text-[#FFE500] border border-[#FFE500]/50 text-[10px] px-2 py-0.5 rounded font-streaming">LÍDER MÁXIMUS</span>
+              {% endif %}
+            </h2>
+            <p class="text-xs text-[#8aa3b8]">{{ current_user.name if current_user else '' }} {{ current_user.surname if current_user else '' }} | Tel: {{ current_user.phone if current_user else '-' }}</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-6 bg-[#03080f]/60 px-5 py-3 rounded-xl border border-[#1d354d]">
+          <div class="text-center">
+            <span class="text-[9px] text-[#8aa3b8] font-streaming uppercase block">RÉCORD OFICIAL</span>
+            <span class="text-sm font-bold text-[#38bdf8] font-mono">
+              {{ current_user.wins if current_user else 0 }}W - {{ current_user.losses if current_user else 0 }}L - {{ current_user.draws if current_user else 0 }}E
+            </span>
+          </div>
+          <div class="h-8 w-px bg-[#1d354d]"></div>
+          <div class="text-center">
+            <span class="text-[9px] text-[#8aa3b8] font-streaming uppercase block">PUNTOS</span>
+            <span class="text-sm font-bold text-[#FFE500] font-mono">{{ current_user.points if current_user else 0 }} PTS</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- MATRIZ DE DESEMPEÑO Y DIAGNÓSTICO -->
+      <div class="space-y-3">
+        <h3 class="text-xs font-bold text-[#38bdf8] font-streaming uppercase tracking-wider">MATRIZ DE RENDIMIENTO Y HABILIDADES</h3>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+          <div class="bg-[#03080f]/40 p-2.5 rounded-xl border border-[#1d354d]">
+            <span class="text-[9px] text-[#8aa3b8] uppercase block">EFECTIVIDAD DE TIROS</span>
+            <span class="text-xs font-bold text-white font-mono">{{ current_user.matriz_raw.precision_tiros if current_user and current_user.matriz_raw and current_user.matriz_raw.precision_tiros else '0%' }}</span>
+          </div>
+          <div class="bg-[#03080f]/40 p-2.5 rounded-xl border border-[#1d354d]">
+            <span class="text-[9px] text-[#8aa3b8] uppercase block">PRECISIÓN DE PASES</span>
+            <span class="text-xs font-bold text-white font-mono">{{ current_user.matriz_raw.precision_pases if current_user and current_user.matriz_raw and current_user.matriz_raw.precision_pases else '0%' }}</span>
+          </div>
+          <div class="bg-[#03080f]/40 p-2.5 rounded-xl border border-[#1d354d]">
+            <span class="text-[9px] text-[#8aa3b8] uppercase block">ENTRADAS GANADAS</span>
+            <span class="text-xs font-bold text-white font-mono">{{ current_user.matriz_raw.entradas_ganadas if current_user and current_user.matriz_raw and current_user.matriz_raw.entradas_ganadas else 0 }}</span>
+          </div>
+          <div class="bg-[#03080f]/40 p-2.5 rounded-xl border border-[#1d354d]">
+            <span class="text-[9px] text-[#8aa3b8] uppercase block">NOTA TEMPERAMENTO</span>
+            <span class="text-xs font-bold text-purple-400 font-mono">{{ current_user.matriz_raw.nota_mental if current_user and current_user.matriz_raw and current_user.matriz_raw.nota_mental else 'N/A' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- HISTORIAL Y ESTADO DE TORNEOS -->
+      <div class="space-y-3 pt-2 border-t border-[#38bdf8]/20">
+        <h3 class="text-xs font-bold text-[#FFE500] font-streaming uppercase tracking-wider">HISTORIAL DE TORNEOS Y RESULTADOS</h3>
+        {% if torneos_historial is defined and torneos_historial %}
+          <div class="divide-y divide-[#1d354d]/50">
+            {% for th in torneos_historial %}
+              <div class="py-2.5 flex justify-between items-center text-xs">
+                <div>
+                  <span class="font-bold text-white font-streaming">{{ th.titulo }}</span>
+                  <p class="text-[10px] text-[#8aa3b8]">Estado: {{ th.estado }}</p>
+                </div>
+                <div>
+                  {% if th.estado == 'Finalizado' %}
+                    {% if th.ganador == current_user.nickname %}
+                      <span class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/50 px-2.5 py-1 rounded text-[10px] font-bold font-streaming">🏆 CAMPEÓN (VICTORIA)</span>
+                    {% else %}
+                      <span class="bg-rose-500/20 text-rose-300 border border-rose-500/50 px-2.5 py-1 rounded text-[10px] font-bold font-streaming">❌ ELIMINADO (DERROTA)</span>
+                    {% endif %}
+                  {% else %}
+                    <span class="bg-amber-500/20 text-amber-300 border border-amber-500/50 px-2.5 py-1 rounded text-[10px] font-bold font-streaming">⚔️ EN COMPETENCIA</span>
+                  {% endif %}
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="text-xs text-[#8aa3b8] italic">No tienes torneos finalizados o registrados en tu historial por el momento.</p>
+        {% endif %}
+      </div>
+
+    </section>
+  {% endif %}
+
+</div>
+{% endblock %}
